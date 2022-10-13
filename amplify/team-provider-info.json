@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-amplifyd02a0dca37374-staging-214527-authRole",
+      "UnauthRoleArn": "arn:aws:iam::826897014935:role/amplify-amplifyd02a0dca37374-staging-214527-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::826897014935:role/amplify-amplifyd02a0dca37374-staging-214527-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-amplifyd02a0dca37374-staging-214527-deployment",
+      "UnauthRoleName": "amplify-amplifyd02a0dca37374-staging-214527-unauthRole",
+      "StackName": "amplify-amplifyd02a0dca37374-staging-214527",
+      "StackId": "arn:aws:cloudformation:eu-west-2:826897014935:stack/amplify-amplifyd02a0dca37374-staging-214527/59e36ba0-4b40-11ed-9fec-0299a7a45a6a",
+      "AmplifyAppId": "d1wn3s3nacqud3"
+    },
+    "categories": {
+      "api": {
+        "vditappbooking": {}
+      }
+    }
+  }
+}
