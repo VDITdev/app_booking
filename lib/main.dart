@@ -1,5 +1,6 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:app_booking/screens/signup_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -39,33 +40,34 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        body: Center(child: SignUpScreen(),),
+        // body: Center(
+        //   child: Column(
+        //     mainAxisAlignment: MainAxisAlignment.center,
             
-            children: [
-              GestureDetector(
-                onTap: () {
-                  signUpUser();
-                  print(isSignUpComplete);
-                },
-                child: Text("Sign Up"),
-              ),
-              GestureDetector(
-                onTap: () {
-                  confirmUser();
-                },
-                child: Text("Confirm"),
-              ),
-              GestureDetector(
-                onTap: () {
-                  signInUser('test1', '123456');
-                },
-                child: Text("Sign In"),
-              ),
-            ],
-          ),
-        ),
+        //     children: [
+        //       GestureDetector(
+        //         onTap: () {
+        //           signUpUser();
+        //           print(isSignUpComplete);
+        //         },
+        //         child: Text("Sign Up"),
+        //       ),
+        //       GestureDetector(
+        //         onTap: () {
+        //           confirmUser();
+        //         },
+        //         child: Text("Confirm"),
+        //       ),
+        //       GestureDetector(
+        //         onTap: () {
+        //           signInUser('test1', '123456');
+        //         },
+        //         child: Text("Sign In"),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ),
     );
   }
@@ -125,6 +127,41 @@ Future<void> signInUser(String username, String password) async {
 
   } on AuthException catch (e) {
     safePrint(e.message);
+  }
+}
+
+Future<void> signOutCurrentUser() async {
+  try {
+    await Amplify.Auth.signOut();
+  } on AuthException catch (e) {
+    print(e.message);
+  }
+}
+
+// ------------------------------------
+
+Future<void> fetchAuthSession() async {
+  try {
+    final result = await Amplify.Auth.fetchAuthSession(
+      options: CognitoSessionOptions(getAWSCredentials: true),
+    );
+    String identityId = (result as CognitoAuthSession).identityId!;
+    safePrint('identityId: $identityId');
+  } on AuthException catch (e) {
+    safePrint(e.message);
+  }
+}
+
+
+Future<void> fetchAuthSessionWithTimeout() async {
+  try {
+    final result = await Amplify.Auth.fetchAuthSession().timeout(
+      const Duration(seconds: 5),
+    );
+    final identityId = (result as CognitoAuthSession).identityId!;
+    safePrint('identityId: $identityId');
+  } on Exception catch (e) {
+    safePrint('Something went wrong while fetching the session: $e');
   }
 }
 
