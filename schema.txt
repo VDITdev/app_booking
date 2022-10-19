@@ -1,0 +1,53 @@
+
+interface Event {
+    id: ID!
+    name: String!
+    startsAt: String
+    endsAt: String
+    venue: Venue
+    minAgeRestriction: Int
+}
+
+type Query {
+    findEventsAtVenue(venueId: ID!): [Event]
+}
+
+# ----------------------
+
+type Venue @model @auth(rules: [{allow: public}]) {
+    id: ID!
+    name: String
+    address: String
+    maxOccupancy: Int
+}
+
+type Concert implements Event @model @auth(rules: [{allow: public}]) {
+    id: ID!
+    name: String!
+    startsAt: String
+    endsAt: String
+    venue: Venue
+    minAgeRestriction: Int
+    performingBand: String
+}
+
+type Festival implements Event @model @auth(rules: [{allow: public}]) {
+    id: ID!
+    name: String!
+    startsAt: String
+    endsAt: String
+    venue: Venue
+    minAgeRestriction: Int
+    performers: [String]
+}
+
+type Conference implements Event @model @auth(rules: [{allow: public}]) {
+    id: ID!
+    name: String!
+    startsAt: String
+    endsAt: String
+    venue: Venue
+    minAgeRestriction: Int
+    speakers: [String]
+    workshops: [String]
+}

@@ -10,7 +10,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   @override
   Stream<PostState> mapEventToState(PostEvent event) async* {
-    if (event == Load_PostEvent) {
+    if (event is Load_PostEvent) {
       yield Loading_PostState();
       try {} catch (e) {}
     }

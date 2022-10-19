@@ -4,18 +4,20 @@ import 'package:app_booking/screens/app_navigator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'amplifyconfiguration.dart';
 import 'screens/signup/signup_screen.dart';
 import 'src/auth/auth_bloc.dart';
+import 'utils/route/router.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
 
+  const MyApp({Key? key}) : super(key: key);
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -46,9 +48,16 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: _amplifyconfigured
+      initialRoute: "/",
+      home: 
+      BlocProvider(
+        create: (context) => AuthBloc(),
+        child: _amplifyconfigured
           ? AppNavigator()
-          : const CircularProgressIndicator(),
+          : Container(),
+      )
+      
+          
     );
   }
 }

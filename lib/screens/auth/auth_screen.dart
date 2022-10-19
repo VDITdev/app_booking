@@ -8,11 +8,14 @@ class AuthScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: ElevatedButton(
-          child: Text('Sign In'),
-          onPressed: () => BlocProvider.of<AuthBloc>(context)
-              .add(SignIn_AuthEvent(userId: 'abc')),
-        ),
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            return ElevatedButton(
+              child: const Text('Sign In'),
+              onPressed: () {},
+            );
+          },
+        )
       ),
     );
   }

@@ -1,30 +1,57 @@
 import 'package:app_booking/src/auth/auth_repo.dart';
-import 'package:bloc/bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc() : super(Unknown_AuthState());
-  final authRepo = AuthRepository();
+  AuthBloc() : super(Init_AuthState());
+
+  final _authRepo = AuthRepository();
 
   @override
   Stream<AuthState> mapEventToState(AuthEvent event) async* {
-    if (event == SignIn_AuthEvent) {
-      final userId = await authRepo.fetchUserIdFromAttributes();
+    print(event);
+
+    if (event is Init_AuthEvent) {
+      yield Unknown_AuthState();
+    }
+
+    if (event is SignIn_AuthEvent) {
+      final userId = await _authRepo.fetchUserIdFromAttributes();
       try {
         yield Authen_AuthState(userId: userId);
+        yield SignIn_AuthState();
       } catch (e) {
         yield Unauthen_AuthState();
       }
-    } else if (event == SignUp_AuthEvent) {
-    } else if (event == SignOut_AuthEvent) {
-      try {
-        await authRepo.signOut();
-      } catch (e) {
-        yield Unauthen_AuthState();
-      }
+      
     }
+
+    if (event is SignUp_AuthEvent) {
+      yield SignUp_AuthState();
+    }
+
+    if (event is SignOut_AuthEvent) {
+      await _authRepo.signOut();
+      yield Unauthen_AuthState();
+    }
+
+
+    // else if (event is SignIn_AuthEvent) {
+    //   final userId = await authRepo.fetchUserIdFromAttributes();
+    //   try {
+    //     yield Authen_AuthState(userId: userId);
+    //   } catch (e) {
+    //     yield Unauthen_AuthState();
+    //   }
+    // } else if (event is SignUp_AuthEvent) {
+    // } else if (event is SignOut_AuthEvent) {
+    //   try {
+    //     await authRepo.signOut();
+    //   } catch (e) {
+    //     yield Unauthen_AuthState();
+    //   }
+    // }
   }
 }

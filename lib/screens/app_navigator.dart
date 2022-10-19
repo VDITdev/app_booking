@@ -1,3 +1,4 @@
+import 'package:app_booking/screens/auth/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -10,16 +11,18 @@ class AppNavigator extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        return Navigator(
-          pages: [
-            if (state is Unknown_AuthState)
-              const MaterialPage(child: CircularProgressIndicator()),
-            if (state is Unauthen_AuthState)
-              const MaterialPage(child: Text('Unauthenticated')),
-            if (state is Authen_AuthState)
-              const MaterialPage(child: Text('Authenticated')),
-          ],
-          onPopPage: ((route, result) => route.didPop(result)),
+        return BlocProvider(create: (context) => AuthBloc(), child: Navigator(
+            pages: [  
+              if (state is Init_AuthState)
+                // const MaterialPage(child: Text('Unknown')),
+              MaterialPage(child: AuthScreen()),
+              if (state is Unauthen_AuthState)
+                const MaterialPage(child: Text('Unauthenticated')),
+              if (state is Authen_AuthState)
+                const MaterialPage(child: Text('Authenticated')),
+            ],
+            onPopPage: ((route, result) => route.didPop(result)),
+          ),
         );
       },
     );

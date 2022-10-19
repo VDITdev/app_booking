@@ -41,6 +41,7 @@ dependencies:
   amplify_auth_cognito: "<1.0.0"
 
   flutter_bloc: ^8.1.0
+  graphql_flutter: ^5.1.0
 
 dev_dependencies:
   flutter_test:
