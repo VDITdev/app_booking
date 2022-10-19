@@ -29,8 +29,9 @@ import 'package:flutter/foundation.dart';
 class Comment extends Model {
   static const classType = const _CommentModelType();
   final String id;
-  final Post? _post;
   final String? _content;
+  final String? _postID;
+  final Post? _post;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -40,10 +41,6 @@ class Comment extends Model {
   @override
   String getId() {
     return id;
-  }
-  
-  Post? get post {
-    return _post;
   }
   
   String get content {
@@ -59,6 +56,23 @@ class Comment extends Model {
     }
   }
   
+  String get postID {
+    try {
+      return _postID!;
+    } catch(e) {
+      throw new AmplifyCodeGenModelException(
+          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
+  
+  Post? get post {
+    return _post;
+  }
+  
   TemporalDateTime? get createdAt {
     return _createdAt;
   }
@@ -67,13 +81,14 @@ class Comment extends Model {
     return _updatedAt;
   }
   
-  const Comment._internal({required this.id, post, required content, createdAt, updatedAt}): _post = post, _content = content, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Comment._internal({required this.id, required content, required postID, post, createdAt, updatedAt}): _content = content, _postID = postID, _post = post, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Comment({String? id, Post? post, required String content}) {
+  factory Comment({String? id, required String content, required String postID, Post? post}) {
     return Comment._internal(
       id: id == null ? UUID.getUUID() : id,
-      post: post,
-      content: content);
+      content: content,
+      postID: postID,
+      post: post);
   }
   
   bool equals(Object other) {
@@ -85,8 +100,9 @@ class Comment extends Model {
     if (identical(other, this)) return true;
     return other is Comment &&
       id == other.id &&
-      _post == other._post &&
-      _content == other._content;
+      _content == other._content &&
+      _postID == other._postID &&
+      _post == other._post;
   }
   
   @override
@@ -98,8 +114,9 @@ class Comment extends Model {
     
     buffer.write("Comment {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("post=" + (_post != null ? _post!.toString() : "null") + ", ");
     buffer.write("content=" + "$_content" + ", ");
+    buffer.write("postID=" + "$_postID" + ", ");
+    buffer.write("post=" + (_post != null ? _post!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -107,31 +124,34 @@ class Comment extends Model {
     return buffer.toString();
   }
   
-  Comment copyWith({String? id, Post? post, String? content}) {
+  Comment copyWith({String? id, String? content, String? postID, Post? post}) {
     return Comment._internal(
       id: id ?? this.id,
-      post: post ?? this.post,
-      content: content ?? this.content);
+      content: content ?? this.content,
+      postID: postID ?? this.postID,
+      post: post ?? this.post);
   }
   
   Comment.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
+      _content = json['content'],
+      _postID = json['postID'],
       _post = json['post']?['serializedData'] != null
         ? Post.fromJson(new Map<String, dynamic>.from(json['post']['serializedData']))
         : null,
-      _content = json['content'],
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'post': _post?.toJson(), 'content': _content, 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'content': _content, 'postID': _postID, 'post': _post?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "id");
+  static final QueryField CONTENT = QueryField(fieldName: "content");
+  static final QueryField POSTID = QueryField(fieldName: "postID");
   static final QueryField POST = QueryField(
     fieldName: "post",
     fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Post).toString()));
-  static final QueryField CONTENT = QueryField(fieldName: "content");
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Comment";
     modelSchemaDefinition.pluralName = "Comments";
@@ -147,19 +167,29 @@ class Comment extends Model {
         ])
     ];
     
+    modelSchemaDefinition.indexes = [
+      ModelIndex(fields: const ["postID", "content"], name: "byPost")
+    ];
+    
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Comment.CONTENT,
+      isRequired: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Comment.POSTID,
+      isRequired: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.belongsTo(
       key: Comment.POST,
       isRequired: false,
       targetName: "postCommentsId",
       ofModelName: (Post).toString()
-    ));
-    
-    modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Comment.CONTENT,
-      isRequired: true,
-      ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(

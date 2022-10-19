@@ -40,6 +40,8 @@ dependencies:
   amplify_datastore: "<1.0.0"
   amplify_auth_cognito: "<1.0.0"
 
+  flutter_bloc: ^8.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

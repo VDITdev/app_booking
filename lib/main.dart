@@ -1,10 +1,13 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'package:app_booking/screens/signup_screen.dart';
+import 'package:app_booking/screens/app_navigator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'amplifyconfiguration.dart';
+import 'screens/signup/signup_screen.dart';
+import 'src/auth/auth_bloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,6 +21,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool _amplifyconfigured = false;
   @override
   void initState() {
     super.initState();
@@ -31,6 +35,9 @@ class _MyAppState extends State<MyApp> {
 
       // call Amplify.configure to use the initialized categories in your app
       await Amplify.configure(amplifyconfig);
+      setState(() {
+        _amplifyconfigured = true;
+      });
     } on Exception catch (e) {
       safePrint('An error occurred configuring Amplify: $e');
     }
@@ -39,130 +46,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: Center(child: SignUpScreen(),),
-        // body: Center(
-        //   child: Column(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-            
-        //     children: [
-        //       GestureDetector(
-        //         onTap: () {
-        //           signUpUser();
-        //           print(isSignUpComplete);
-        //         },
-        //         child: Text("Sign Up"),
-        //       ),
-        //       GestureDetector(
-        //         onTap: () {
-        //           confirmUser();
-        //         },
-        //         child: Text("Confirm"),
-        //       ),
-        //       GestureDetector(
-        //         onTap: () {
-        //           signInUser('test1', '123456');
-        //         },
-        //         child: Text("Sign In"),
-        //       ),
-        //     ],
-        //   ),
-        // ),
-      ),
+      home: _amplifyconfigured
+          ? AppNavigator()
+          : const CircularProgressIndicator(),
     );
   }
-
-// ------------------------------------------
-
-  bool isSignUpComplete = false;
-
-  Future<void> signUpUser() async {
-    try {
-      final userAttributes = <CognitoUserAttributeKey, String>{
-        CognitoUserAttributeKey.email: 'tuan.nguyen@vdit.co.uk',
-        CognitoUserAttributeKey.phoneNumber: '+447123456789',
-        // additional attributes as needed
-      };
-      final result = await Amplify.Auth.signUp(
-        username: 'test1',
-        password: '123456',
-        options: CognitoSignUpOptions(userAttributes: userAttributes),
-      );
-      setState(() {
-        isSignUpComplete = result.isSignUpComplete;
-      });
-    } on AuthException catch (e) {
-      safePrint(e.message);
-    }
-  }
-
-  Future<void> confirmUser() async {
-    try {
-      final result = await Amplify.Auth.confirmSignUp(
-          username: 'test1', confirmationCode: '566231');
-
-      setState(() {
-        isSignUpComplete = result.isSignUpComplete;
-      });
-    } on AuthException catch (e) {
-      safePrint(e.message);
-    }
-  }
-
-
-// ------------------------------------------
-
-bool isSignedIn = false;
-
-Future<void> signInUser(String username, String password) async {
-  try {
-    final result = await Amplify.Auth.signIn(
-      username: username,
-      password: password,
-    );
-
-    setState(() {
-      isSignedIn = result.isSignedIn;
-    });
-
-  } on AuthException catch (e) {
-    safePrint(e.message);
-  }
-}
-
-Future<void> signOutCurrentUser() async {
-  try {
-    await Amplify.Auth.signOut();
-  } on AuthException catch (e) {
-    print(e.message);
-  }
-}
-
-// ------------------------------------
-
-Future<void> fetchAuthSession() async {
-  try {
-    final result = await Amplify.Auth.fetchAuthSession(
-      options: CognitoSessionOptions(getAWSCredentials: true),
-    );
-    String identityId = (result as CognitoAuthSession).identityId!;
-    safePrint('identityId: $identityId');
-  } on AuthException catch (e) {
-    safePrint(e.message);
-  }
-}
-
-
-Future<void> fetchAuthSessionWithTimeout() async {
-  try {
-    final result = await Amplify.Auth.fetchAuthSession().timeout(
-      const Duration(seconds: 5),
-    );
-    final identityId = (result as CognitoAuthSession).identityId!;
-    safePrint('identityId: $identityId');
-  } on Exception catch (e) {
-    safePrint('Something went wrong while fetching the session: $e');
-  }
-}
-
 }

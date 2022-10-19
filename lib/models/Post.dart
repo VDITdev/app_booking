@@ -31,8 +31,9 @@ class Post extends Model {
   static const classType = const _PostModelType();
   final String id;
   final String? _title;
-  final Blog? _blog;
+  final PostStatus? _status;
   final List<Comment>? _comments;
+  final List<Note>? _note;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -57,12 +58,25 @@ class Post extends Model {
     }
   }
   
-  Blog? get blog {
-    return _blog;
+  PostStatus get status {
+    try {
+      return _status!;
+    } catch(e) {
+      throw new AmplifyCodeGenModelException(
+          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
   }
   
   List<Comment>? get comments {
     return _comments;
+  }
+  
+  List<Note>? get note {
+    return _note;
   }
   
   TemporalDateTime? get createdAt {
@@ -73,14 +87,15 @@ class Post extends Model {
     return _updatedAt;
   }
   
-  const Post._internal({required this.id, required title, blog, comments, createdAt, updatedAt}): _title = title, _blog = blog, _comments = comments, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Post._internal({required this.id, required title, required status, comments, note, createdAt, updatedAt}): _title = title, _status = status, _comments = comments, _note = note, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Post({String? id, required String title, Blog? blog, List<Comment>? comments}) {
+  factory Post({String? id, required String title, required PostStatus status, List<Comment>? comments, List<Note>? note}) {
     return Post._internal(
       id: id == null ? UUID.getUUID() : id,
       title: title,
-      blog: blog,
-      comments: comments != null ? List<Comment>.unmodifiable(comments) : comments);
+      status: status,
+      comments: comments != null ? List<Comment>.unmodifiable(comments) : comments,
+      note: note != null ? List<Note>.unmodifiable(note) : note);
   }
   
   bool equals(Object other) {
@@ -93,8 +108,9 @@ class Post extends Model {
     return other is Post &&
       id == other.id &&
       _title == other._title &&
-      _blog == other._blog &&
-      DeepCollectionEquality().equals(_comments, other._comments);
+      _status == other._status &&
+      DeepCollectionEquality().equals(_comments, other._comments) &&
+      DeepCollectionEquality().equals(_note, other._note);
   }
   
   @override
@@ -107,7 +123,7 @@ class Post extends Model {
     buffer.write("Post {");
     buffer.write("id=" + "$id" + ", ");
     buffer.write("title=" + "$_title" + ", ");
-    buffer.write("blog=" + (_blog != null ? _blog!.toString() : "null") + ", ");
+    buffer.write("status=" + (_status != null ? enumToString(_status)! : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -115,41 +131,47 @@ class Post extends Model {
     return buffer.toString();
   }
   
-  Post copyWith({String? id, String? title, Blog? blog, List<Comment>? comments}) {
+  Post copyWith({String? id, String? title, PostStatus? status, List<Comment>? comments, List<Note>? note}) {
     return Post._internal(
       id: id ?? this.id,
       title: title ?? this.title,
-      blog: blog ?? this.blog,
-      comments: comments ?? this.comments);
+      status: status ?? this.status,
+      comments: comments ?? this.comments,
+      note: note ?? this.note);
   }
   
   Post.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
       _title = json['title'],
-      _blog = json['blog']?['serializedData'] != null
-        ? Blog.fromJson(new Map<String, dynamic>.from(json['blog']['serializedData']))
-        : null,
+      _status = enumFromString<PostStatus>(json['status'], PostStatus.values),
       _comments = json['comments'] is List
         ? (json['comments'] as List)
           .where((e) => e?['serializedData'] != null)
           .map((e) => Comment.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
           .toList()
         : null,
+      _note = json['note'] is List
+        ? (json['note'] as List)
+          .where((e) => e?['serializedData'] != null)
+          .map((e) => Note.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
+          .toList()
+        : null,
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'title': _title, 'blog': _blog?.toJson(), 'comments': _comments?.map((Comment? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'title': _title, 'status': enumToString(_status), 'comments': _comments?.map((Comment? e) => e?.toJson()).toList(), 'note': _note?.map((Note? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "id");
   static final QueryField TITLE = QueryField(fieldName: "title");
-  static final QueryField BLOG = QueryField(
-    fieldName: "blog",
-    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Blog).toString()));
+  static final QueryField STATUS = QueryField(fieldName: "status");
   static final QueryField COMMENTS = QueryField(
     fieldName: "comments",
     fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Comment).toString()));
+  static final QueryField NOTE = QueryField(
+    fieldName: "note",
+    fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Note).toString()));
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
     modelSchemaDefinition.name = "Post";
     modelSchemaDefinition.pluralName = "Posts";
@@ -173,18 +195,24 @@ class Post extends Model {
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.belongsTo(
-      key: Post.BLOG,
-      isRequired: false,
-      targetName: "blogPostsId",
-      ofModelName: (Blog).toString()
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Post.STATUS,
+      isRequired: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.enumeration)
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
       key: Post.COMMENTS,
       isRequired: false,
       ofModelName: (Comment).toString(),
-      associatedKey: Comment.POST
+      associatedKey: Comment.POSTID
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
+      key: Post.NOTE,
+      isRequired: false,
+      ofModelName: (Note).toString(),
+      associatedKey: Note.POSTID
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(

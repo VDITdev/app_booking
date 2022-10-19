@@ -21,17 +21,17 @@
 
 import 'ModelProvider.dart';
 import 'package:amplify_core/amplify_core.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 
 
-/** This is an auto generated class representing the Blog type in your schema. */
+/** This is an auto generated class representing the Note type in your schema. */
 @immutable
-class Blog extends Model {
-  static const classType = const _BlogModelType();
+class Note extends Model {
+  static const classType = const _NoteModelType();
   final String id;
-  final String? _name;
-  final List<Post>? _posts;
+  final String? _notice;
+  final String? _postID;
+  final Post? _post;
   final TemporalDateTime? _createdAt;
   final TemporalDateTime? _updatedAt;
 
@@ -43,9 +43,9 @@ class Blog extends Model {
     return id;
   }
   
-  String get name {
+  String get notice {
     try {
-      return _name!;
+      return _notice!;
     } catch(e) {
       throw new AmplifyCodeGenModelException(
           AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
@@ -56,8 +56,21 @@ class Blog extends Model {
     }
   }
   
-  List<Post>? get posts {
-    return _posts;
+  String get postID {
+    try {
+      return _postID!;
+    } catch(e) {
+      throw new AmplifyCodeGenModelException(
+          AmplifyExceptionMessages.codeGenRequiredFieldForceCastExceptionMessage,
+          recoverySuggestion:
+            AmplifyExceptionMessages.codeGenRequiredFieldForceCastRecoverySuggestion,
+          underlyingException: e.toString()
+          );
+    }
+  }
+  
+  Post? get post {
+    return _post;
   }
   
   TemporalDateTime? get createdAt {
@@ -68,13 +81,14 @@ class Blog extends Model {
     return _updatedAt;
   }
   
-  const Blog._internal({required this.id, required name, posts, createdAt, updatedAt}): _name = name, _posts = posts, _createdAt = createdAt, _updatedAt = updatedAt;
+  const Note._internal({required this.id, required notice, required postID, post, createdAt, updatedAt}): _notice = notice, _postID = postID, _post = post, _createdAt = createdAt, _updatedAt = updatedAt;
   
-  factory Blog({String? id, required String name, List<Post>? posts}) {
-    return Blog._internal(
+  factory Note({String? id, required String notice, required String postID, Post? post}) {
+    return Note._internal(
       id: id == null ? UUID.getUUID() : id,
-      name: name,
-      posts: posts != null ? List<Post>.unmodifiable(posts) : posts);
+      notice: notice,
+      postID: postID,
+      post: post);
   }
   
   bool equals(Object other) {
@@ -84,10 +98,11 @@ class Blog extends Model {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is Blog &&
+    return other is Note &&
       id == other.id &&
-      _name == other._name &&
-      DeepCollectionEquality().equals(_posts, other._posts);
+      _notice == other._notice &&
+      _postID == other._postID &&
+      _post == other._post;
   }
   
   @override
@@ -97,9 +112,11 @@ class Blog extends Model {
   String toString() {
     var buffer = new StringBuffer();
     
-    buffer.write("Blog {");
+    buffer.write("Note {");
     buffer.write("id=" + "$id" + ", ");
-    buffer.write("name=" + "$_name" + ", ");
+    buffer.write("notice=" + "$_notice" + ", ");
+    buffer.write("postID=" + "$_postID" + ", ");
+    buffer.write("post=" + (_post != null ? _post!.toString() : "null") + ", ");
     buffer.write("createdAt=" + (_createdAt != null ? _createdAt!.format() : "null") + ", ");
     buffer.write("updatedAt=" + (_updatedAt != null ? _updatedAt!.format() : "null"));
     buffer.write("}");
@@ -107,37 +124,37 @@ class Blog extends Model {
     return buffer.toString();
   }
   
-  Blog copyWith({String? id, String? name, List<Post>? posts}) {
-    return Blog._internal(
+  Note copyWith({String? id, String? notice, String? postID, Post? post}) {
+    return Note._internal(
       id: id ?? this.id,
-      name: name ?? this.name,
-      posts: posts ?? this.posts);
+      notice: notice ?? this.notice,
+      postID: postID ?? this.postID,
+      post: post ?? this.post);
   }
   
-  Blog.fromJson(Map<String, dynamic> json)  
+  Note.fromJson(Map<String, dynamic> json)  
     : id = json['id'],
-      _name = json['name'],
-      _posts = json['posts'] is List
-        ? (json['posts'] as List)
-          .where((e) => e?['serializedData'] != null)
-          .map((e) => Post.fromJson(new Map<String, dynamic>.from(e['serializedData'])))
-          .toList()
+      _notice = json['notice'],
+      _postID = json['postID'],
+      _post = json['post']?['serializedData'] != null
+        ? Post.fromJson(new Map<String, dynamic>.from(json['post']['serializedData']))
         : null,
       _createdAt = json['createdAt'] != null ? TemporalDateTime.fromString(json['createdAt']) : null,
       _updatedAt = json['updatedAt'] != null ? TemporalDateTime.fromString(json['updatedAt']) : null;
   
   Map<String, dynamic> toJson() => {
-    'id': id, 'name': _name, 'posts': _posts?.map((Post? e) => e?.toJson()).toList(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
+    'id': id, 'notice': _notice, 'postID': _postID, 'post': _post?.toJson(), 'createdAt': _createdAt?.format(), 'updatedAt': _updatedAt?.format()
   };
 
   static final QueryField ID = QueryField(fieldName: "id");
-  static final QueryField NAME = QueryField(fieldName: "name");
-  static final QueryField POSTS = QueryField(
-    fieldName: "posts",
+  static final QueryField NOTICE = QueryField(fieldName: "notice");
+  static final QueryField POSTID = QueryField(fieldName: "postID");
+  static final QueryField POST = QueryField(
+    fieldName: "post",
     fieldType: ModelFieldType(ModelFieldTypeEnum.model, ofModelName: (Post).toString()));
   static var schema = Model.defineSchema(define: (ModelSchemaDefinition modelSchemaDefinition) {
-    modelSchemaDefinition.name = "Blog";
-    modelSchemaDefinition.pluralName = "Blogs";
+    modelSchemaDefinition.name = "Note";
+    modelSchemaDefinition.pluralName = "Notes";
     
     modelSchemaDefinition.authRules = [
       AuthRule(
@@ -150,19 +167,29 @@ class Blog extends Model {
         ])
     ];
     
+    modelSchemaDefinition.indexes = [
+      ModelIndex(fields: const ["postID", "notice"], name: "byNote")
+    ];
+    
     modelSchemaDefinition.addField(ModelFieldDefinition.id());
     
     modelSchemaDefinition.addField(ModelFieldDefinition.field(
-      key: Blog.NAME,
+      key: Note.NOTICE,
       isRequired: true,
       ofType: ModelFieldType(ModelFieldTypeEnum.string)
     ));
     
-    modelSchemaDefinition.addField(ModelFieldDefinition.hasMany(
-      key: Blog.POSTS,
+    modelSchemaDefinition.addField(ModelFieldDefinition.field(
+      key: Note.POSTID,
+      isRequired: true,
+      ofType: ModelFieldType(ModelFieldTypeEnum.string)
+    ));
+    
+    modelSchemaDefinition.addField(ModelFieldDefinition.belongsTo(
+      key: Note.POST,
       isRequired: false,
-      ofModelName: (Post).toString(),
-      associatedKey: Post.BLOG
+      targetName: "postNoteId",
+      ofModelName: (Post).toString()
     ));
     
     modelSchemaDefinition.addField(ModelFieldDefinition.nonQueryField(
@@ -181,11 +208,11 @@ class Blog extends Model {
   });
 }
 
-class _BlogModelType extends ModelType<Blog> {
-  const _BlogModelType();
+class _NoteModelType extends ModelType<Note> {
+  const _NoteModelType();
   
   @override
-  Blog fromJson(Map<String, dynamic> jsonData) {
-    return Blog.fromJson(jsonData);
+  Note fromJson(Map<String, dynamic> jsonData) {
+    return Note.fromJson(jsonData);
   }
 }
