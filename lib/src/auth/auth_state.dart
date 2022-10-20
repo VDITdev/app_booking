@@ -1,10 +1,26 @@
 part of 'auth_bloc.dart';
 
-abstract class AuthState {}
+class AuthState {
+  User? user;
+  Status? status;
 
-class Init_AuthState extends AuthState {
-  
+  AuthState({
+    this.user,
+    this.status = const StatusInitial(),
+  });
+
+  AuthState copyWith({
+    User? user,
+    Status? status,
+  }) {
+    return AuthState(
+      user: user ?? this.user,
+      status: status ?? this.status,
+    );
+  }
 }
+
+class Init_AuthState extends AuthState {}
 
 class SignIn_AuthState extends AuthState {}
 

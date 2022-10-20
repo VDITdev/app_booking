@@ -23,17 +23,19 @@ import 'package:amplify_core/amplify_core.dart';
 import 'Comment.dart';
 import 'Note.dart';
 import 'Post.dart';
+import 'User.dart';
 
 export 'Comment.dart';
 export 'Note.dart';
 export 'Post.dart';
 export 'PostStatus.dart';
+export 'User.dart';
 
 class ModelProvider implements ModelProviderInterface {
   @override
-  String version = "5d0a40fab4c5f66c83d12dee04607415";
+  String version = "b85fbc822cf64d9fda84a5c989ff0201";
   @override
-  List<ModelSchema> modelSchemas = [Comment.schema, Note.schema, Post.schema];
+  List<ModelSchema> modelSchemas = [Comment.schema, Note.schema, Post.schema, User.schema];
   static final ModelProvider _instance = ModelProvider();
   @override
   List<ModelSchema> customTypeSchemas = [];
@@ -48,6 +50,8 @@ class ModelProvider implements ModelProviderInterface {
         return Note.classType;
       case "Post":
         return Post.classType;
+      case "User":
+        return User.classType;
       default:
         throw Exception("Failed to find model in model provider for model name: " + modelName);
     }

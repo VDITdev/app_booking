@@ -6,12 +6,21 @@ class AuthRepository {
   bool isSignedIn = false;
 
   // Sign in
-  Future<String> signIn(String username, String password) async {
+  Future<String> signIn({
+    required String username,
+    required String password,
+  }) async {
     try {
+      print(Amplify.Auth.getCurrentUser());
       final result = await Amplify.Auth.signIn(
-        username: username,
-        password: password,
+        username: 'tuan_vdit',
+        password: '123456',
+        options: CognitoSignInOptions(
+          authFlowType: AuthenticationFlowType.customAuth,
+        ),
       );
+
+      print(result.isSignedIn);
       if (result.isSignedIn) {
         // get user id
         return fetchUserIdFromAttributes();

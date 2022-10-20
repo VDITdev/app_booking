@@ -1,4 +1,6 @@
+import 'package:app_booking/models/User.dart';
 import 'package:app_booking/src/auth/auth_repo.dart';
+import 'package:app_booking/utils/state/status.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'auth_event.dart';
@@ -18,14 +20,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     if (event is SignIn_AuthEvent) {
-      final userId = await _authRepo.fetchUserIdFromAttributes();
+      // final userId = await _authRepo.signIn();
       try {
-        yield Authen_AuthState(userId: userId);
-        yield SignIn_AuthState();
+        // yield Authen_AuthState(userId: userId);
       } catch (e) {
         yield Unauthen_AuthState();
       }
-      
     }
 
     if (event is SignUp_AuthEvent) {
@@ -36,7 +36,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _authRepo.signOut();
       yield Unauthen_AuthState();
     }
-
 
     // else if (event is SignIn_AuthEvent) {
     //   final userId = await authRepo.fetchUserIdFromAttributes();
