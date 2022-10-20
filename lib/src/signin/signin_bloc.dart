@@ -19,10 +19,13 @@ class SigninBloc extends Bloc<SigninEvent, SigninState> {
       yield state.copyWith(password: event.password);
     } else if (event is SubmissionSigninEvent) {
       try {
+        await _authRepo.signOut();  // test
+
         await _authRepo.signIn(
           username: state.email,
           password: state.password,
         );
+        await _authRepo.fetchUserIdFromAttributes();      ///test
         yield state.copyWith(status: StatusSucess());
       } catch (e) {
         yield state.copyWith(status: StatusFailed(e: e));

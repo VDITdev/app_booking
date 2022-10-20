@@ -16,20 +16,15 @@ class AuthRepository {
         password: password,
       );
 
-      print("result" + result.isSignedIn.toString());    
+      print("result: " + result.isSignedIn.toString());    
       
       if (result.isSignedIn) {
         // get user id
         // return fetchUserIdFromAttributes();
-      } else {
-        throw Exception('Could not sign in');
       }
-      // setState(() {
-      //   isSignedIn = result.isSignedIn;
-      // });
     } on AuthException catch (e) {
     safePrint(e.message);
-  }
+    }
   }
 
   // Sign up
@@ -78,12 +73,16 @@ class AuthRepository {
   }
 
   // ID from Attributes
-  Future<String> fetchUserIdFromAttributes() async {
-    final attributes = await Amplify.Auth.fetchUserAttributes();
-    final subAttribute =
-        attributes.firstWhere((element) => element.userAttributeKey == 'sub');
-    final userId = subAttribute.value;
-    return userId;
+  Future<void> fetchUserIdFromAttributes() async {
+    try {
+      final result = await Amplify.Auth.fetchUserAttributes();
+      for (final element in result) {
+        print('key: ${element.userAttributeKey}; value: ${element.value}');
+      }
+    } on AuthException catch (e) {
+      print(e.message);
+    }
+    
   }
 
   // Session
