@@ -40,7 +40,7 @@ class _SignInScreenState extends State<SignInScreen> {
       decoration: InputDecoration(icon: Icon(Icons.email), hintText: "Email"),
       validator: (value) {},
       onChanged: (value) {
-        print("email: " + value);
+        // print("email: " + value);
         context.read<SigninBloc>().add(EmailSigninEvent(email: value));
       },
     );

@@ -6,54 +6,51 @@ class AuthRepository {
   bool isSignedIn = false;
 
   // Sign in
-  Future<String> signIn({
+  Future<void> signIn({
     required String username,
     required String password,
   }) async {
     try {
-      print(Amplify.Auth.getCurrentUser());
       final result = await Amplify.Auth.signIn(
-        username: 'tuan_vdit',
-        password: '123456',
-        options: CognitoSignInOptions(
-          authFlowType: AuthenticationFlowType.customAuth,
-        ),
+        username: username,
+        password: password,
       );
 
-      print(result.isSignedIn);
+      print("result" + result.isSignedIn.toString());    
+      
       if (result.isSignedIn) {
         // get user id
-        return fetchUserIdFromAttributes();
+        // return fetchUserIdFromAttributes();
       } else {
         throw Exception('Could not sign in');
       }
       // setState(() {
       //   isSignedIn = result.isSignedIn;
       // });
-    } on AuthException {
-      rethrow;
-    }
+    } on AuthException catch (e) {
+    safePrint(e.message);
+  }
   }
 
   // Sign up
-  Future<void> signUp() async {
+  Future<void> signUp({required String username, required String email, required String password}) async {
     try {
       final userAttributes = <CognitoUserAttributeKey, String>{
-        CognitoUserAttributeKey.email: 'tuan.nguyen@vdit.co.uk',
-        CognitoUserAttributeKey.phoneNumber: '+447123456789',
+        CognitoUserAttributeKey.name: username,
+        CognitoUserAttributeKey.email: email,
         // additional attributes as needed
       };
       final result = await Amplify.Auth.signUp(
-        username: 'test1',
-        password: '123456',
+        username: email,
+        password: password,
         options: CognitoSignUpOptions(userAttributes: userAttributes),
       );
       // setState(() {
       //   isSignUpComplete = result.isSignUpComplete;
       // });
-    } on AuthException {
-      rethrow;
-    }
+    } on AuthException catch (e) {
+    safePrint(e.message);
+  }
   }
 
   // Confirm
@@ -66,9 +63,9 @@ class AuthRepository {
       // setState(() {
       //   isSignUpComplete = result.isSignUpComplete;
       // });
-    } on AuthException {
-      rethrow;
-    }
+    } on AuthException catch (e) {
+    safePrint(e.message);
+  }
   }
 
   // Sign out

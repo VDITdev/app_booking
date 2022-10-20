@@ -50,25 +50,25 @@ class _OnboardScreenState extends State<OnboardScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               "VDIT",
               style: TextStyle(fontSize: 80, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             MaterialButton(
               minWidth: 200,
               color: Colors.lightBlueAccent,
-              child: Text("Login"),
+              child: const Text("Login"),
               onPressed: () {
-                Navigator.popAndPushNamed(context, SIGNIN_ROUTE);
+                Navigator.pushNamed(context, SIGNIN_ROUTE);
               },
             ),
             MaterialButton(
               minWidth: 200,
               color: Colors.lightBlueAccent,
-              child: Text("Register"),
+              child: const Text("Register"),
               onPressed: () {
-                Navigator.popAndPushNamed(context, SIGNUP_ROUTE);
+                Navigator.pushNamed(context, SIGNUP_ROUTE);
               },
             ),
           ],

@@ -26,7 +26,6 @@ class SigninBloc extends Bloc<SigninEvent, SigninState> {
         yield state.copyWith(status: StatusSucess());
       } catch (e) {
         yield state.copyWith(status: StatusFailed(e: e));
-        yield state.copyWith(status: StatusInitial());
       }
     }
   }

@@ -1,3 +1,5 @@
+import 'package:app_booking/src/auth/auth_bloc.dart';
+import 'package:app_booking/utils/route/router.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,10 +16,11 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return _progressBuilder();
   }
-}
+
 
 Widget _progressBuilder() {
   return Scaffold(
+    appBar: _appBar(),
     body: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -27,6 +30,22 @@ Widget _progressBuilder() {
       ],
     ),
   );
+}
+
+AppBar _appBar() {
+    return AppBar(
+      leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.logout, size: 30),
+          onPressed: () {
+            context.read<AuthBloc>().add(SignOut_AuthEvent());
+            Navigator.popAndPushNamed(context, ONBOARD_ROUTE);
+          },
+        )
+      ],
+    );
+  }
 }
 
 // class _HomeViewState extends State<HomeView> {
