@@ -1,5 +1,4 @@
 import 'package:app_booking/src/auth/auth_bloc.dart';
-import 'package:app_booking/utils/route/router.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,7 +39,7 @@ AppBar _appBar() {
           icon: Icon(Icons.logout, size: 30),
           onPressed: () {
             context.read<AuthBloc>().add(SignOut_AuthEvent());
-            Navigator.popAndPushNamed(context, ONBOARD_ROUTE);
+            // Navigator.popAndPushNamed(context, ONBOARD_ROUTE);
           },
         )
       ],

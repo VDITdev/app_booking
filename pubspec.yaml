@@ -39,6 +39,7 @@ dependencies:
   amplify_flutter: "<1.0.0"
   amplify_datastore: "<1.0.0"
   amplify_auth_cognito: "<1.0.0"
+  amplify_authenticator: ^0.2.3
 
   flutter_bloc: ^7.3.0
   graphql_flutter: ^5.1.0

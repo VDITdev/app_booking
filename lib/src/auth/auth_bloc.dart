@@ -13,19 +13,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   @override
   Stream<AuthState> mapEventToState(AuthEvent event) async* {
-    print(event);
-
-    if (event is Init_AuthEvent) {
-      yield Unknown_AuthState();
-    }
 
     if (event is SignIn_AuthEvent) {
-      // final userId = await _authRepo.signIn();
-      try {
-        // yield Authen_AuthState(userId: userId);
-      } catch (e) {
-        yield Unauthen_AuthState();
-      }
+      yield SignIn_AuthState();
     }
 
     if (event is SignUp_AuthEvent) {
@@ -34,7 +24,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     if (event is SignOut_AuthEvent) {
       await _authRepo.signOut();
-      yield Unauthen_AuthState();
     }
 
     // else if (event is SignIn_AuthEvent) {

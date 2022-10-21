@@ -1,5 +1,6 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:app_booking/models/User.dart';
 
 class AuthRepository {
   bool isSignUpComplete = false;
@@ -7,23 +8,20 @@ class AuthRepository {
 
   // Sign in
   Future<void> signIn({
-    required String username,
+    required String email,
     required String password,
   }) async {
     try {
       final result = await Amplify.Auth.signIn(
-        username: username,
+        username: email,
         password: password,
       );
 
       print("result: " + result.isSignedIn.toString());    
       
-      if (result.isSignedIn) {
-        // get user id
-        // return fetchUserIdFromAttributes();
-      }
-    } on AuthException catch (e) {
-    safePrint(e.message);
+      
+    } catch (e) {
+      print(e);
     }
   }
 

@@ -30,9 +30,6 @@ class SignUp_AuthState extends AuthState {}
 
 class Unknown_AuthState extends AuthState {}
 
-class Authen_AuthState extends AuthState {
-  final String userId;
-  Authen_AuthState({required this.userId});
-}
+class Authen_AuthState extends AuthState {}
 
 class Unauthen_AuthState extends AuthState {}
