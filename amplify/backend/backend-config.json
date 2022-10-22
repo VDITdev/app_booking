@@ -29,7 +29,9 @@
       "dependsOn": [],
       "customAuth": false,
       "frontendAuthConfig": {
-        "socialProviders": [],
+        "socialProviders": [
+          "FACEBOOK"
+        ],
         "usernameAttributes": [],
         "signupAttributes": [],
         "passwordProtectionSettings": {
