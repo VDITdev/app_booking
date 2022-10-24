@@ -35,7 +35,7 @@
         "usernameAttributes": [],
         "signupAttributes": [],
         "passwordProtectionSettings": {
-          "passwordPolicyMinLength": 8,
+          "passwordPolicyMinLength": "6",
           "passwordPolicyCharacters": []
         },
         "mfaConfiguration": "OFF",

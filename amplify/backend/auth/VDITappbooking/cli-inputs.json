@@ -2,7 +2,7 @@
   "version": "1",
   "cognitoConfig": {
     "identityPoolName": "testAuthIdentityPool",
-    "allowUnauthenticatedIdentities": false,
+    "allowUnauthenticatedIdentities": true,
     "resourceNameTruncated": "vditapd243c30a",
     "userPoolName": "VDITappbooking",
     "autoVerifiedAttributes": [
@@ -16,8 +16,8 @@
     "smsVerificationMessage": "Your verification code is {####}",
     "emailVerificationSubject": "Your verification code",
     "emailVerificationMessage": "Your verification code is {####}",
-    "defaultPasswordPolicy": false,
-    "passwordPolicyMinLength": 8,
+    "defaultPasswordPolicy": true,
+    "passwordPolicyMinLength": "6",
     "passwordPolicyCharacters": [],
     "requiredAttributes": [],
     "aliasAttributes": [],
@@ -31,7 +31,7 @@
     "resourceName": "VDITappbooking",
     "authSelections": "identityPoolAndUserPool",
     "serviceName": "Cognito",
-    "useDefault": "defaultSocial",
+    "useDefault": "manual",
     "userPoolGroups": false,
     "userPoolGroupList": [],
     "adminQueries": false,
@@ -62,7 +62,8 @@
       "Facebook"
     ],
     "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"public_profile\",\"AttributeMapping\":{\"username\":\"id\"}}]",
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"myapp://\"],\"LogoutURLs\":[\"myapp://\"]}",
-    "authProviders": []
+    "authProviders": [],
+    "thirdPartyAuth": false,
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"email\",\"openid\"],\"CallbackURLs\":[\"myapp://callback/\"],\"LogoutURLs\":[\"myapp://signout/\"]}"
   }
 }
