@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
       print('Could not configure Amplify: $e');
     }
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     return Authenticator(
@@ -47,6 +47,7 @@ class _MyAppState extends State<MyApp> {
           default:
             // returning null defaults to the prebuilt authenticator for all other steps
             return null;
+          
         }
       },
       child: MaterialApp(

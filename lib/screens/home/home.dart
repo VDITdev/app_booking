@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   AppBar _appBar() {
     return AppBar(
       leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
-      actions: [SignOutButton()],
+      actions: const [SignOutButton()],
     );
   }
 }
