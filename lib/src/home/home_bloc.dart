@@ -15,6 +15,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     if (event is Init_HomeEvent) {
       await _homeRepo.fetchCurrentUserAttributes();
+      // await _homeRepo.fetchAuthSession();
+      // await _homeRepo.getCurrentUser();
       yield Init_HomeState();
     }
 
