@@ -24,7 +24,15 @@ class SignUpScreen extends StatelessWidget {
               // app logo
               const Center(child: FlutterLogo(size: 100)),
               // prebuilt sign up form from amplify_authenticator package
-              SignUpForm(),
+              SignUpForm.custom(
+                fields: [
+                  SignUpFormField.email(required: true),
+                  SignUpFormField.password(),
+                  SignUpFormField.passwordConfirmation(),
+                  SignUpFormField.phoneNumber(required: true),
+                  SignUpFormField.name()
+                ],
+              ),
             ],
           ),
         ),

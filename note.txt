@@ -1,5 +1,15 @@
 https://docs.amplify.aws/lib/auth/getting-started/q/platform/flutter/#install-amplify-libraries
 
+Facebook:
+644866037106027
+2011a1961ed57d3276d9e9c5201b5f76
+
+Google:
+707361061103-cdrcbea1brthgh2bpurhajjs21uo5j1j.apps.googleusercontent.com
+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
+
+
+
 https://github.com/GeekyAnts/flutter_amplify_datastore_demo
 
 

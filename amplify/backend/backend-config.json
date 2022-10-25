@@ -23,17 +23,24 @@
     }
   },
   "auth": {
-    "VDITappbooking": {
+    "vditappbooking2c84a43b": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
       "customAuth": false,
       "frontendAuthConfig": {
         "socialProviders": [
-          "FACEBOOK"
+          "FACEBOOK",
+          "GOOGLE"
         ],
-        "usernameAttributes": [],
-        "signupAttributes": [],
+        "usernameAttributes": [
+          "EMAIL",
+          "PHONE_NUMBER"
+        ],
+        "signupAttributes": [
+          "EMAIL",
+          "NAME"
+        ],
         "passwordProtectionSettings": {
           "passwordPolicyMinLength": "6",
           "passwordPolicyCharacters": []

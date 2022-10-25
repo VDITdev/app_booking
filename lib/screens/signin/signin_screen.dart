@@ -21,7 +21,12 @@ class SignInScreen extends StatelessWidget {
               // app logo
               const Center(child: FlutterLogo(size: 100)),
               // prebuilt sign in form from amplify_authenticator package
-              SignInForm(),
+              SignInForm.custom(
+                fields: [
+                  SignInFormField.username(),
+                  SignInFormField.password(),
+                ],
+              ),
             ],
           ),
         ),
@@ -42,6 +47,5 @@ class SignInScreen extends StatelessWidget {
         ),
       ],
     );
-    ;
   }
 }
