@@ -20,11 +20,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _homeBuilder() {
     return BlocProvider(
-      create: (context) => HomeBloc(),
+      create: (context) => HomeBloc()..add(Init_HomeEvent()),
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           return Scaffold(
-            appBar: _appBar(),
+            appBar: _appBar(context),
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -39,10 +39,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  AppBar _appBar() {
+  AppBar _appBar(BuildContext context) {
     return AppBar(
+      title: Text("HOME"),
       leading: IconButton(icon: Icon(Icons.menu), onPressed: () {}),
-      actions: const [SignOutButton()],
+
+      // actions: const [SignOutButton()],
+
+      actions: [IconButton(icon: Icon(Icons.logout),onPressed: () {
+        BlocProvider.of<HomeBloc>(context).add(SignOut_HomeEvent());
+      })]
     );
   }
 }

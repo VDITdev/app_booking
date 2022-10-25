@@ -1,7 +1,7 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:app_booking/screens/home/home.dart';
+import 'package:app_booking/screens/home/home_screen.dart';
 import 'package:app_booking/screens/signin/signin_screen.dart';
 import 'package:app_booking/screens/signup/signup_screen.dart';
 import 'package:flutter/material.dart';

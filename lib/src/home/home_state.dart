@@ -5,4 +5,4 @@ abstract class HomeState {}
 
 class Init_HomeState extends HomeState {}
 
-class Launch_HomeState extends HomeState {}
+class SignOut_HomeState extends HomeState {}
