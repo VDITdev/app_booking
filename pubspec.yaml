@@ -35,15 +35,20 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  amplify_api: ^1.0.0-next.0+4
 
-  amplify_auth_cognito: ^1.0.0-next.0+6
-  amplify_authenticator: ^1.0.0-next.0+4
-  amplify_flutter: ^1.0.0-next.0+4
-  # amplify_core: ^1.0.0-next.0+4
-  
-  amplify_datastore: ^1.0.0-next.0+3
+  # CONFIG FOR WEB (NOT STABLE)
+  # amplify_api: ^1.0.0-next.0+4
+  # amplify_auth_cognito: ^1.0.0-next.0+6
+  # amplify_authenticator: ^1.0.0-next.0+4
+  # amplify_flutter: ^1.0.0-next.0+4
+  # amplify_datastore: ^1.0.0-next.0+3
 
+  # CONFIG FOR WEB (STABLE)
+  amplify_api: "<1.0.0"
+  amplify_auth_cognito: "<1.0.0"
+  amplify_authenticator: "<1.0.0"
+  amplify_flutter: "<1.0.0"
+  amplify_datastore: "<1.0.0"
 
   flutter_bloc: ^7.3.0
   graphql_flutter: ^5.1.0

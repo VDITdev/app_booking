@@ -1,10 +1,10 @@
 {
   "version": "1",
   "cognitoConfig": {
-    "identityPoolName": "vditappbooking2c84a43b_identitypool_2c84a43b",
+    "identityPoolName": "vditappbooking473b357a_identitypool_473b357a",
     "allowUnauthenticatedIdentities": true,
-    "resourceNameTruncated": "vditap2c84a43b",
-    "userPoolName": "vditappbooking2c84a43b_userpool_2c84a43b",
+    "resourceNameTruncated": "vditap473b357a",
+    "userPoolName": "vditappbooking473b357a_userpool_473b357a",
     "autoVerifiedAttributes": [
       "email"
     ],
@@ -20,8 +20,7 @@
     "passwordPolicyMinLength": "6",
     "passwordPolicyCharacters": [],
     "requiredAttributes": [
-      "email",
-      "name"
+      "email"
     ],
     "aliasAttributes": [],
     "userpoolClientGenerateSecret": false,
@@ -32,15 +31,15 @@
     "userpoolClientReadAttributes": [
       "email"
     ],
-    "userpoolClientLambdaRole": "vditap2c84a43b_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "vditap473b357a_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "2c84a43b",
-    "resourceName": "vditappbooking2c84a43b",
+    "sharedId": "473b357a",
+    "resourceName": "vditappbooking473b357a",
     "authSelections": "identityPoolAndUserPool",
     "useDefault": "manual",
     "hostedUI": true,
     "usernameAttributes": [
-      "email, phone_number"
+      "email"
     ],
     "triggers": {},
     "hostedUIDomainName": "vdit",
@@ -48,7 +47,7 @@
       "Facebook",
       "Google"
     ],
-    "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"email,public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"name\":\"name\",\"username\":\"id\"}},{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"name\":\"name\",\"username\":\"sub\"}}]",
+    "hostedUIProviderMeta": "[{\"ProviderName\":\"Facebook\",\"authorize_scopes\":\"email,public_profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"id\"}},{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid email profile\",\"AttributeMapping\":{\"email\":\"email\",\"username\":\"sub\"}}]",
     "userPoolGroupList": [],
     "serviceName": "Cognito",
     "usernameCaseSensitive": false,
@@ -70,12 +69,11 @@
     "thirdPartyAuth": false,
     "userPoolGroups": false,
     "adminQueries": false,
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"myapp://callback/\"],\"LogoutURLs\":[\"myapp://signout/\"]}",
     "authProviders": [],
     "parentStack": {
       "Ref": "AWS::StackId"
     },
-    "permissions": [],
-    "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\"},{\"ProviderName\":\"Google\"}]",
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"myapp://callback/\",\"http://localhost:3000/\"],\"LogoutURLs\":[\"myapp://signout/\",\"http://localhost:3000/\"]}"
+    "permissions": []
   }
 }
