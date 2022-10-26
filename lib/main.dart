@@ -1,3 +1,6 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:desktop_window/desktop_window.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_authenticator/amplify_authenticator.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -9,6 +12,16 @@ import 'package:flutter/material.dart';
 import 'amplifyconfiguration.dart';
 
 void main() {
+  // WidgetsFlutterBinding.ensureInitialized();
+
+  // if (!kIsWeb) {
+  //   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+  //     DesktopWindow.setWindowSize(const Size(400, 600));
+  //     DesktopWindow.setWindowSize(const Size(800, double.infinity));
+  //     // DesktopWindow(Rect.fromLTRB(0, 0, 600.0, 1000.0));
+  //   }
+  // }
+
   runApp(const MyApp());
 }
 
