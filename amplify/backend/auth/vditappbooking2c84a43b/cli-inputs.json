@@ -76,6 +76,6 @@
     },
     "permissions": [],
     "hostedUIProviderCreds": "[{\"ProviderName\":\"Facebook\"},{\"ProviderName\":\"Google\"}]",
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"myapp://callback/\"],\"LogoutURLs\":[\"myapp://signout/\"]}"
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"myapp://callback/\",\"http://localhost:3000/\"],\"LogoutURLs\":[\"myapp://signout/\",\"http://localhost:3000/\"]}"
   }
 }
