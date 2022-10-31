@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:intl/intl.dart';
 
 class AppointmentScreen extends StatefulWidget {
   const AppointmentScreen({Key? key}) : super(key: key);
@@ -9,6 +10,17 @@ class AppointmentScreen extends StatefulWidget {
 }
 
 class _AppointmentScreenState extends State<AppointmentScreen> {
+
+  TextEditingController dateController = TextEditingController(); 
+  TextEditingController timeController = TextEditingController(); 
+
+  @override
+  void initState() {
+    dateController.text = ""; //set the initial value of text field
+    timeController.text = ""; //set the initial value of text field
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +44,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         timeSlotViewSettings: TimeSlotViewSettings(
           startHour: 9,
           endHour: 19,
-          timeInterval: Duration(minutes: 30),
+          timeInterval: Duration(minutes: 60),
           timeFormat: 'HH:mm',
           timeTextStyle: TextStyle(
             fontSize: 12,
@@ -46,13 +58,27 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             color: Colors.black,
           ),
         ),
+
+        headerStyle: CalendarHeaderStyle(
+          textAlign: TextAlign.center, textStyle: TextStyle(fontSize: 24)),
+    
         onTap: (CalendarTapDetails details) {
           // dynamic appointment = details.appointments;
           // DateTime date = details.date!;
           // CalendarElement element = details.targetElement;
+          // print(details.targetElement == CalendarElement.resourceHeader);
 
-          if (details.targetElement.index == 2) {
-            // Open Popup Add New when index = 2
+          if(details.targetElement != CalendarElement.header){
+
+            String dateFormatted = DateFormat('dd / MM / yyyy').format(details.date!);
+            String timeFormatted = DateFormat('HH : mm').format(details.date!);
+
+            setState(() {
+              dateController.text = dateFormatted;
+              timeController.text = timeFormatted;
+            });
+
+            if (details.targetElement == CalendarElement.calendarCell) {
             showDialog(
               context: context,
               builder: (BuildContext context) {
@@ -82,6 +108,65 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                               icon: Icon(Icons.message),
                             ),
                           ),
+                          TextField(
+                              
+                                controller: dateController, //editing controller of this TextField
+                                decoration: const InputDecoration( 
+                                
+                                  icon: Icon(Icons.calendar_month), //icon of text field
+                                  labelText: "Booking Date" //label text of field
+                                ),
+                                readOnly: true,  // when true user cannot edit text 
+                                onTap: () async {
+                                  DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: details.date!, //get today's date
+                                      firstDate: DateTime(2015), //DateTime.now() - not to allow to choose before today.
+                                      lastDate: DateTime(2030)
+                                  );
+                                  
+                                  if(pickedDate != null ){
+                                      print(pickedDate);  //get the picked date in the format => 2022-07-04 00:00:00.000
+                                       DateFormat('dd / MM / yyyy').format(pickedDate); // format date in required form here we use yyyy-MM-dd that means time is removed
+                                      print(dateFormatted); //formatted date output using intl package =>  2022-07-04
+                                        //You can format date as per your need
+
+                                      setState(() {
+                                        dateFormatted = dateFormatted;
+                                        dateController.text = dateFormatted; //set foratted date to TextField value. 
+                                      });
+                                  }else{
+                                      print("Date is not selected");
+                                  }
+                                },
+                            ),
+
+                            TextField(
+                              controller: timeController, //editing controller of this TextField
+                              decoration: InputDecoration( 
+                                icon: Icon(Icons.timer), //icon of text field
+                                labelText: "Booking Time" //label text of field
+                              ),
+                              readOnly: true,
+                              onTap: () async {
+                                TimeOfDay? pickedTime =  await showTimePicker(
+                                        initialTime: TimeOfDay.fromDateTime(details.date!),
+                                        context: context,
+                                    );
+                                if(pickedTime != null ){
+                                    print(pickedTime.format(context));
+                                    DateTime parsedTime = DateFormat.jm().parse(pickedTime.format(context).toString());
+                                    String formattedTime = DateFormat('HH : mm').format(parsedTime);
+                                    print(formattedTime);
+                                    setState(() {
+                                      timeController.text = formattedTime;
+                                    });
+                                  }else{
+                                      print("Time is not selected");
+                                  }
+                                },
+                            )
+                          
                         ],
                       ),
                     ),
@@ -99,6 +184,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           } else {
             // Open Popup Review/Amend when index = 3
           }
+          }
+
+          
         },
       ),
     );
