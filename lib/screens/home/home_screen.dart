@@ -1,8 +1,10 @@
-import 'package:app_booking/screens/home/component/task_group.dart';
-import 'package:app_booking/screens/home/widget/dashboard_builder.dart';
-import 'package:app_booking/screens/home/widget/drawer_builder.dart';
+import 'package:app_booking/screens/dashboard/component/task_group.dart';
+import 'package:app_booking/screens/dashboard/dashboard_screen.dart';
+import 'package:app_booking/screens/drawer/drawer_menu.dart';
 import 'package:app_booking/src/home/home_bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -24,32 +26,36 @@ class _HomeScreenState extends State<HomeScreen> {
       create: (context) => HomeBloc()..add(Init_HomeEvent()),
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
-          return Scaffold(
-            appBar: _appBar(context),
-            body: SingleChildScrollView(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  DashboardBuilder(),
-                ],
+          return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        leading: Icon(CupertinoIcons.option),
+        trailing: _topRight(context),
+        middle: Text('Dashboard'),
+      ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    DashboardScreen(),
+                  ],
+                ),
               ),
             ),
-            drawer: DrawerBuilder(),
+            // drawer: DrawerMenu(),
           );
         },
       ),
     );
   }
 
-  AppBar _appBar(BuildContext context) {
-    return AppBar(title: Text(" Dashboard "), actions: [
-      IconButton(
-        icon: Icon(Icons.logout),
+  Widget _topRight(BuildContext context) {
+      return CupertinoButton(
+        child: Icon(Icons.logout),
         onPressed: () {
           BlocProvider.of<HomeBloc>(context).add(SignOut_HomeEvent());
         },
-      )
-    ]);
+      );
   }
 }

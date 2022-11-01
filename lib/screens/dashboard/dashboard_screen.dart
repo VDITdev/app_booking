@@ -1,11 +1,11 @@
-import 'package:app_booking/screens/home/component/task_group.dart';
+import 'package:app_booking/screens/dashboard/component/task_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-class DashboardBuilder extends StatelessWidget {
-  const DashboardBuilder({super.key});
+class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

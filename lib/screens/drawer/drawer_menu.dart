@@ -1,12 +1,12 @@
-import 'package:app_booking/screens/home/appointment_screen.dart';
-import 'package:app_booking/screens/home/calendar_screen.dart';
+import 'package:app_booking/screens/appointment/appointment_screen.dart';
+import 'package:app_booking/screens/appointment/calendar_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
 
-class DrawerBuilder extends StatelessWidget {
-  const DrawerBuilder({super.key});
+class DrawerMenu extends StatelessWidget {
+  const DrawerMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
