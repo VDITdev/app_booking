@@ -26,36 +26,54 @@ class _HomeScreenState extends State<HomeScreen> {
       create: (context) => HomeBloc()..add(Init_HomeEvent()),
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
-          return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        leading: Icon(CupertinoIcons.option),
-        trailing: _topRight(context),
-        middle: Text('Dashboard'),
-      ),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    DashboardScreen(),
-                  ],
-                ),
-              ),
+          return Scaffold(
+            appBar: CupertinoNavigationBar(
+              leading: _topLeft(),
+              trailing: _topRight(),
+              middle: Text('Dashboard'),
             ),
-            // drawer: DrawerMenu(),
+            body: const SingleChildScrollView(
+              padding: EdgeInsets.all(10.0),
+              child: DashboardScreen(),
+            ),
+            drawer: DrawerMenu(),
           );
         },
       ),
     );
   }
 
-  Widget _topRight(BuildContext context) {
+  Widget _topRight() {
+    return Builder(builder: (context) {
       return CupertinoButton(
-        child: Icon(Icons.logout),
+        alignment: Alignment.centerRight,
+        padding: EdgeInsets.zero,
+        child: const Icon(
+          Icons.logout,
+          size: 30,
+        ),
         onPressed: () {
           BlocProvider.of<HomeBloc>(context).add(SignOut_HomeEvent());
         },
       );
+    });
+  }
+
+  Widget _topLeft() {
+    return Builder(
+      builder: (context) {
+        return CupertinoButton(
+          alignment: Alignment.centerLeft,
+          padding: EdgeInsets.zero,
+          child: Icon(
+            Icons.menu,
+            size: 30,
+          ),
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
+        );
+      },
+    );
   }
 }

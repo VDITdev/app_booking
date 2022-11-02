@@ -12,9 +12,8 @@ class AppointmentScreen extends StatefulWidget {
 }
 
 class _AppointmentScreenState extends State<AppointmentScreen> {
-
-  TextEditingController dateController = TextEditingController(); 
-  TextEditingController timeController = TextEditingController(); 
+  TextEditingController dateController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
 
   @override
   void initState() {
@@ -26,7 +25,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
+      navigationBar: CupertinoNavigationBar(
+        padding: EdgeInsetsDirectional.zero,
+        previousPageTitle: 'asd',
+        leading: CupertinoNavigationBarBackButton(previousPageTitle: 'Back'),
         middle: Text('Appointment'),
       ),
       // floatingActionButton: FloatingActionButton(
@@ -34,9 +36,10 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       //   child: const Icon(Icons.add),
       // ),
       child: SafeArea(
+        bottom: false,
         child: SfCalendar(
           view: CalendarView.timelineDay,
-          todayHighlightColor: Colors.black,
+          todayHighlightColor: Colors.blue,
           showNavigationArrow: true,
           showDatePickerButton: true,
           allowDragAndDrop: true,
@@ -47,12 +50,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             _appointmentDataSource(),
             _resourceColl(),
           ),
-      
-          
           timeSlotViewSettings: TimeSlotViewSettings(
-            startHour: 9,
-            endHour: 19,
-            timeInterval: (kIsWeb) ? Duration(minutes: 15) : Duration(minutes: 60),
+            // startHour: 9,
+            // endHour: 19,
+            timeInterval:
+                (kIsWeb) ? Duration(minutes: 15) : Duration(minutes: 60),
             timeFormat: 'HH:mm',
             timeTextStyle: TextStyle(
               fontSize: 12,
@@ -66,138 +68,69 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               color: Colors.black,
             ),
           ),
-      
-          headerStyle: CalendarHeaderStyle(
-            textAlign: TextAlign.center),
-          
+          headerStyle: CalendarHeaderStyle(textAlign: TextAlign.center),
           onTap: (CalendarTapDetails details) {
             // dynamic appointment = details.appointments;
             // DateTime date = details.date!;
             // CalendarElement element = details.targetElement;
             // print(details.targetElement == CalendarElement.resourceHeader);
-      
-            if(details.targetElement != CalendarElement.header){
-      
-              String dateFormatted = DateFormat('dd / MM / yyyy').format(details.date!);
-              String timeFormatted = DateFormat('HH : mm').format(details.date!);
-      
+
+            if (details.targetElement != CalendarElement.header) {
+              String dateFormatted =
+                  DateFormat('dd / MM / yyyy').format(details.date!);
+              String timeFormatted =
+                  DateFormat('HH : mm').format(details.date!);
+
               setState(() {
                 dateController.text = dateFormatted;
                 timeController.text = timeFormatted;
               });
-      
+
               if (details.targetElement == CalendarElement.calendarCell) {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return CupertinoAlertDialog(
-                    // scrollable: true,
-                    title: Text('Add New'),
-                    content: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Form(
-                        child: Column(
-                          children: <Widget>[
-                            CupertinoTextFormFieldRow(
-                              placeholder: 'Enter text',
-                            ),
-                            // TextFormField(
-                            //   decoration: InputDecoration(
-                            //     labelText: 'Name',
-                            //     icon: Icon(Icons.account_box),
-                            //   ),
-                            // ),
-                            // TextFormField(
-                            //   decoration: InputDecoration(
-                            //     labelText: 'Email',
-                            //     icon: Icon(Icons.email),
-                            //   ),
-                            // ),
-                            // TextFormField(
-                            //   decoration: InputDecoration(
-                            //     labelText: 'Message',
-                            //     icon: Icon(Icons.message),
-                            //   ),
-                            // ),
-                            // TextField(
-                                
-                            //       controller: dateController, //editing controller of this TextField
-                            //       decoration: const InputDecoration( 
-                                  
-                            //         icon: Icon(Icons.calendar_month), //icon of text field
-                            //         labelText: "Booking Date" //label text of field
-                            //       ),
-                            //       readOnly: true,  // when true user cannot edit text 
-                            //       onTap: () async {
-                            //         DateTime? pickedDate = await showDatePicker(
-                            //             context: context,
-                            //             initialDate: details.date!, //get today's date
-                            //             firstDate: DateTime(2015), //DateTime.now() - not to allow to choose before today.
-                            //             lastDate: DateTime(2030)
-                            //         );
-                                    
-                            //         if(pickedDate != null ){
-                            //             print(pickedDate);  //get the picked date in the format => 2022-07-04 00:00:00.000
-                            //              DateFormat('dd / MM / yyyy').format(pickedDate); // format date in required form here we use yyyy-MM-dd that means time is removed
-                            //             print(dateFormatted); //formatted date output using intl package =>  2022-07-04
-                            //               //You can format date as per your need
-      
-                            //             setState(() {
-                            //               dateFormatted = dateFormatted;
-                            //               dateController.text = dateFormatted; //set foratted date to TextField value. 
-                            //             });
-                            //         }else{
-                            //             print("Date is not selected");
-                            //         }
-                            //       },
-                            //   ),
-      
-                            //   TextField(
-                            //     controller: timeController, //editing controller of this TextField
-                            //     decoration: InputDecoration( 
-                            //       icon: Icon(Icons.timer), //icon of text field
-                            //       labelText: "Booking Time" //label text of field
-                            //     ),
-                            //     readOnly: true,
-                            //     onTap: () async {
-                            //       TimeOfDay? pickedTime =  await showTimePicker(
-                            //               initialTime: TimeOfDay.fromDateTime(details.date!),
-                            //               context: context,
-                            //           );
-                            //       if(pickedTime != null ){
-                            //           print(pickedTime.format(context));
-                            //           DateTime parsedTime = DateFormat.jm().parse(pickedTime.format(context).toString());
-                            //           String formattedTime = DateFormat('HH : mm').format(parsedTime);
-                            //           print(formattedTime);
-                            //           setState(() {
-                            //             timeController.text = formattedTime;
-                            //           });
-                            //         }else{
-                            //             print("Time is not selected");
-                            //         }
-                            //       },
-                            //   )
-                            
-                          ],
-                        ),
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return SafeArea(
+                      child: Wrap(
+                        alignment: WrapAlignment.center,
+                        children: [
+                          CupertinoTextFormFieldRow(
+                            placeholder: 'Enter Name',
+                            // controller: ,
+                          ),
+                          CupertinoTextFormFieldRow(
+                            placeholder: 'Enter Email',
+                            // controller: ,
+                          ),
+                          CupertinoTextFormFieldRow(
+                            placeholder: 'Enter Date',
+                            controller: dateController,
+                            onTap: () {
+                              _showDatePicker(dateFormatted, details);
+                            },
+                          ),
+                          CupertinoTextFormFieldRow(
+                            placeholder: 'Enter Time',
+                            controller: timeController,
+                            onTap: () {
+                              _showTimePicker(timeFormatted, details);
+                            },
+                          ),
+                          CupertinoButton.filled(
+                            child: Text('Add'),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          )
+                        ],
                       ),
-                    ),
-                    actions: [
-                      CupertinoButton.filled(
-                          child: Text("Submit"),
-                          onPressed: () {
-                            // your code
-                          })
-                    ],
-                  );
-                },
-              );
-            } else {
-              // Open Popup Review/Amend when index = 3
-            }
-            }
-      
-            
+                    );
+                  },
+                );
+              } else {
+                // Open Popup Review/Amend when index = 3
+              }
+            } else {}
           },
         ),
       ),
@@ -216,6 +149,42 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     DateTime? startTime = appointmentResizeEndDetails.startTime;
     DateTime? endTime = appointmentResizeEndDetails.endTime;
     CalendarResource? resourceDetails = appointmentResizeEndDetails.resource;
+  }
+
+  void _showDatePicker(String dateFormatted, CalendarTapDetails details) async {
+    DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: details.date!,
+        firstDate: DateTime(2015),
+        lastDate: DateTime(2030));
+
+    if (pickedDate != null) {
+      // print(pickedDate);
+      dateFormatted = DateFormat('dd / MM / yyyy').format(pickedDate);
+      // print(dateFormatted);
+      setState(() {
+        dateController.text = dateFormatted;
+      });
+    }
+  }
+
+  void _showTimePicker(String timeFormatted, CalendarTapDetails details) async {
+    TimeOfDay? pickedTime = await showTimePicker(
+      initialTime: TimeOfDay.fromDateTime(details.date!),
+      context: context,
+    );
+    if (pickedTime != null) {
+      // print(pickedTime.format(context));
+      DateTime parsedTime =
+          DateFormat.jm().parse(pickedTime.format(context).toString());
+      timeFormatted = DateFormat('HH : mm').format(parsedTime);
+      // print(formattedTime);
+      setState(() {
+        timeController.text = timeFormatted;
+      });
+    } else {
+      print("Time is not selected");
+    }
   }
 
   List<CalendarResource> _resourceColl() {
