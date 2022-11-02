@@ -1,4 +1,5 @@
 import 'package:app_booking/src/appointment/appointment_bloc.dart';
+import 'package:app_booking/utils/state/status.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +17,15 @@ class AppointmentScreen extends StatefulWidget {
 class _AppointmentScreenState extends State<AppointmentScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  TextEditingController dateController = TextEditingController();
-  TextEditingController timeController = TextEditingController();
+  TextEditingController _dateController = TextEditingController();
+  TextEditingController _timeController = TextEditingController();
+  late CalendarTapDetails _details;
 
   @override
   void initState() {
-    dateController.text = ""; //set the initial value of text field
-    timeController.text = ""; //set the initial value of text field
+    _dateController.text = ""; //set the initial value of text field
+    _timeController.text = ""; //set the initial value of text field
+
     super.initState();
   }
 
@@ -41,14 +44,11 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             onPressed: () {},
           ),
         ),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {},
-        //   child: const Icon(Icons.add),
-        // ),
+
+        // Bloc for whole page
         child: BlocConsumer<AppointmentBloc, AppointmentState>(
           listener: (context, state) {
-            // print(state.name);
-            // print(state.email);
+            // print(state);
           },
           builder: (Acontext, state) {
             return SafeArea(
@@ -85,61 +85,29 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   ),
                 ),
                 headerStyle: CalendarHeaderStyle(textAlign: TextAlign.center),
-                onTap: (CalendarTapDetails details) {
+                onTap: (value) {
                   // dynamic appointment = details.appointments;
                   // DateTime date = details.date!;
                   // CalendarElement element = details.targetElement;
                   // print(details.targetElement == CalendarElement.resourceHeader);
 
-                  if (details.targetElement != CalendarElement.header) {
-                    String dateFormatted =
-                        DateFormat('dd / MM / yyyy').format(details.date!);
-                    String timeFormatted =
-                        DateFormat('HH : mm').format(details.date!);
+                  if (value.targetElement != CalendarElement.header) {
+                    // setState(() {
+                    //   _details = value;
+                    //   _dateController.text =
+                    //       DateFormat('dd / MM / yyyy').format(value.date!);
+                    //   _timeController.text =
+                    //       DateFormat('HH : mm').format(value.date!);
+                    // });
 
-                    setState(() {
-                      dateController.text = dateFormatted;
-                      timeController.text = timeFormatted;
-                    });
-
-                    if (details.targetElement == CalendarElement.calendarCell) {
+                    if (value.targetElement == CalendarElement.calendarCell) {
                       showModalBottomSheet(
                         context: context,
                         builder: (context) {
-                          return Form(
-                            key: _formKey,
-                            child: Wrap(
-                              spacing: 10,
-                              alignment: WrapAlignment.center,
-                              children: [
-                                _nameAppointment(Acontext),
-                                _emailAppointment(Acontext),
-                                CupertinoTextFormFieldRow(
-                                  placeholder: 'Enter Date',
-                                  controller: dateController,
-                                  readOnly: true,
-                                  onTap: () {
-                                    _showDatePicker(dateFormatted, details);
-                                  },
-                                ),
-                                CupertinoTextFormFieldRow(
-                                  placeholder: 'Enter Time',
-                                  controller: timeController,
-                                  readOnly: true,
-                                  onTap: () {
-                                    _showTimePicker(timeFormatted, details);
-                                  },
-                                ),
-                                _addAppointment(Acontext),
-                                SizedBox(height: 60)
-                              ],
-                            ),
-                          );
+                          return _fromBuilder();
                         },
                       );
-                    } else {
-                      // Open Popup Review/Amend when index = 3
-                    }
+                    } else {}
                   } else {}
                 },
               ),
@@ -147,6 +115,167 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           },
         ),
       ),
+    );
+  }
+
+  Widget _fromBuilder() {
+    return BlocProvider(
+
+      // add Init
+      create: (context) => AppointmentBloc(),
+      child: Form(
+        key: _formKey,
+        child: Wrap(
+          spacing: 10,
+          alignment: WrapAlignment.center,
+          children: [
+            _nameAppointment(),
+            _emailAppointment(),
+            _dateAppointment(),
+            _timeAppointment(),
+            _addAppointment(),
+            SizedBox(height: 60)
+          ],
+        ),
+      ),
+    );
+    ;
+  }
+
+  Widget _nameAppointment() {
+    return BlocConsumer<AppointmentBloc, AppointmentState>(
+      listener: (context, state) {
+        // print(state.name);
+      },
+      builder: (context, state) {
+        return CupertinoTextFormFieldRow(
+          placeholder: 'Enter Name',
+          keyboardType: TextInputType.name,
+          validator: (value) {},
+          onChanged: (value) {
+            context
+                .read<AppointmentBloc>()
+                .add(NameAppointmentEvent(name: value));
+          },
+          // controller: ,
+        );
+      },
+    );
+  }
+
+  Widget _emailAppointment() {
+    return BlocConsumer<AppointmentBloc, AppointmentState>(
+      listener: (context, state) {
+        // print(state.email);
+      },
+      builder: (context, state) {
+        return CupertinoTextFormFieldRow(
+          placeholder: 'Enter Email',
+          keyboardType: TextInputType.emailAddress,
+          validator: (value) {},
+          onChanged: (value) {
+            context
+                .read<AppointmentBloc>()
+                .add(EmailAppointmentEvent(email: value));
+          },
+          // controller: ,
+        );
+      },
+    );
+  }
+
+  Widget _dateAppointment() {
+    return BlocConsumer<AppointmentBloc, AppointmentState>(
+      listener: (context, state) {
+        print(state.status);
+        print(state.date);
+        setState(() {
+          String dateFormatted = DateFormat('dd / MM / yyyy').format(state.date);
+          _dateController.text = dateFormatted;
+        });
+      },
+      builder: (context, state) {
+        return CupertinoTextFormFieldRow(
+          placeholder: 'Enter Date',
+          controller: _dateController,
+          readOnly: true,
+          onTap: () {
+            context.read<AppointmentBloc>().add(OpenPickerAppointmentEvent(context)); 
+               
+
+            // context.read<AppointmentBloc>().add(DateAppointmentEvent(date: state.date));
+            // _dateController.text = dateFormatted;
+
+            // if (pickedDate != null) {
+            //   // print(pickedDate);
+            //   String dateFormatted =
+            //       DateFormat('dd / MM / yyyy').format(pickedDate);
+            //   // print(dateFormatted);
+              
+            //   context
+            //       .read<AppointmentBloc>()
+            //       .add(DateAppointmentEvent(date: pickedDate));
+            // } else {
+            //   print("Date is not selected");
+            // }
+          },
+        );
+      },
+    );
+  }
+
+  Widget _timeAppointment() {
+    return BlocConsumer<AppointmentBloc, AppointmentState>(
+      listener: (context, state) {
+        // print(state.time);
+      },
+      builder: (context, state) {
+        return CupertinoTextFormFieldRow(
+          placeholder: 'Enter Time',
+          controller: _timeController,
+          readOnly: true,
+          onTap: () async {
+            TimeOfDay? pickedTime = await showTimePicker(
+              initialTime: TimeOfDay.fromDateTime(_details.date!),
+              context: context,
+            );
+            if (pickedTime != null) {
+              // print(pickedTime.format(context));
+              DateTime parsedTime =
+                  DateFormat.jm().parse(pickedTime.format(context).toString());
+              String timeFormatted = DateFormat('HH : mm').format(parsedTime);
+              // print(formattedTime);
+              setState(() {
+                _timeController.text = timeFormatted;
+              });
+              context
+                  .read<AppointmentBloc>()
+                  .add(TimeAppointmentEvent(time: pickedTime));
+            } else {
+              print("Time is not selected");
+            }
+          },
+        );
+      },
+    );
+  }
+
+  Widget _addAppointment() {
+    return BlocConsumer<AppointmentBloc, AppointmentState>(
+      listener: (context, state) {
+        // print(state.status);
+      },
+      builder: (context, state) {
+        return CupertinoButton.filled(
+          child: Text('Add'),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              context.read<AppointmentBloc>().add(AddAppointmentEvent());
+            }
+            // Navigator.pop(context);
+          },
+        );
+      },
     );
   }
 
@@ -162,78 +291,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     DateTime? startTime = appointmentResizeEndDetails.startTime;
     DateTime? endTime = appointmentResizeEndDetails.endTime;
     CalendarResource? resourceDetails = appointmentResizeEndDetails.resource;
-  }
-
-  void _showDatePicker(String dateFormatted, CalendarTapDetails details) async {
-    DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: details.date!,
-        firstDate: DateTime(2015),
-        lastDate: DateTime(2030));
-
-    if (pickedDate != null) {
-      // print(pickedDate);
-      dateFormatted = DateFormat('dd / MM / yyyy').format(pickedDate);
-      // print(dateFormatted);
-      setState(() {
-        dateController.text = dateFormatted;
-      });
-    }
-  }
-
-  void _showTimePicker(String timeFormatted, CalendarTapDetails details) async {
-    TimeOfDay? pickedTime = await showTimePicker(
-      initialTime: TimeOfDay.fromDateTime(details.date!),
-      context: context,
-    );
-    if (pickedTime != null) {
-      // print(pickedTime.format(context));
-      DateTime parsedTime =
-          DateFormat.jm().parse(pickedTime.format(context).toString());
-      timeFormatted = DateFormat('HH : mm').format(parsedTime);
-      // print(formattedTime);
-      setState(() {
-        timeController.text = timeFormatted;
-      });
-    } else {
-      print("Time is not selected");
-    }
-  }
-
-  Widget _nameAppointment(BuildContext Acontext) {
-    return CupertinoTextFormFieldRow(
-      placeholder: 'Enter Name',
-      keyboardType: TextInputType.name,
-      validator: (value) {},
-      onChanged: (value) {
-        Acontext.read<AppointmentBloc>().add(NameAppointmentEvent(name: value));
-      },
-      // controller: ,
-    );
-  }
-
-  Widget _emailAppointment(BuildContext Acontext) {
-    return CupertinoTextFormFieldRow(
-      placeholder: 'Enter Email',
-      keyboardType: TextInputType.emailAddress,
-      validator: (value) {},
-      onChanged: (value) {
-        Acontext.read<AppointmentBloc>().add(EmailAppointmentEvent(email: value));
-      },
-      // controller: ,
-    );
-  }
-
-  Widget _addAppointment(BuildContext Acontext) {
-    return CupertinoButton.filled(
-      child: Text('Add'),
-      onPressed: () {
-        if (_formKey.currentState!.validate()) {
-          Acontext.read<AppointmentBloc>().add(AddAppointmentEvent());
-        }
-        // Navigator.pop(context);
-      },
-    );
   }
 
   List<CalendarResource> _resourceColl() {
