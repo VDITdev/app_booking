@@ -19,14 +19,19 @@ class DateAppointmentEvent extends AppointmentEvent {
   DateAppointmentEvent({required this.date});
 }
 
-class OpenPickerAppointmentEvent extends AppointmentEvent {
+class DayPickerAppointmentEvent extends AppointmentEvent {
   final BuildContext context;
-  OpenPickerAppointmentEvent(this.context);
+  DayPickerAppointmentEvent(this.context);
 }
 
 class TimeAppointmentEvent extends AppointmentEvent {
   final TimeOfDay time;
   TimeAppointmentEvent({required this.time});
+}
+
+class TimePickerAppointmentEvent extends AppointmentEvent {
+  final BuildContext context;
+  TimePickerAppointmentEvent(this.context);
 }
 
 class AddAppointmentEvent extends AppointmentEvent {}

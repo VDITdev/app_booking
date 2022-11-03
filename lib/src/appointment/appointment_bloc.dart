@@ -25,22 +25,37 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
     if(event is DateAppointmentEvent){
       yield state.copyWith(date: event.date);
     }
-    if(event is OpenPickerAppointmentEvent){
-      DateTime? pickedDate = await showDatePicker(
+    if(event is DayPickerAppointmentEvent){
+      try {
+        DateTime? pickedDate = await showDatePicker(
         context: event.context,
         initialDate: state.date,
         firstDate: DateTime(2015),
         lastDate: DateTime(2030));
-
-      if (pickedDate!=null){
-        yield state.copyWith(status: StatusSucess());
-        yield state.copyWith(date: pickedDate);
-        
+        if (pickedDate!=null){
+          yield state.copyWith(status: StatusSucess());
+          yield state.copyWith(date: pickedDate);
+        }
+      } catch (e) {
+        yield state.copyWith(status: StatusFailed(e: e));
       }
     }
-
     if(event is TimeAppointmentEvent){
       yield state.copyWith(time: event.time);
+    }
+    if(event is TimePickerAppointmentEvent){
+      try {
+        TimeOfDay? pickedTime = await showTimePicker(
+          context: event.context,
+          initialTime: TimeOfDay.fromDateTime(state.date),
+        );
+        if (pickedTime != null) {
+          yield state.copyWith(status: StatusSucess());
+          yield state.copyWith(time: pickedTime);
+        }
+      } catch (e) {
+        yield state.copyWith(status: StatusFailed(e: e));
+      }
     }
 
 

@@ -17,14 +17,19 @@ class AppointmentScreen extends StatefulWidget {
 class _AppointmentScreenState extends State<AppointmentScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  TextEditingController _dateController = TextEditingController();
-  TextEditingController _timeController = TextEditingController();
-  late CalendarTapDetails _details;
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _timeController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+
+  CalendarController _controller = CalendarController();
 
   @override
   void initState() {
     _dateController.text = ""; //set the initial value of text field
     _timeController.text = ""; //set the initial value of text field
+    _nameController.text = ""; //set the initial value of text field
+    _emailController.text = ""; //set the initial value of text field
 
     super.initState();
   }
@@ -48,7 +53,20 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         // Bloc for whole page
         child: BlocConsumer<AppointmentBloc, AppointmentState>(
           listener: (context, state) {
-            // print(state);
+            setState(() {
+              
+              _nameController.text = state.name;
+              _emailController.text = state.email;
+
+              // Catch Date from Event
+              String dateFormatted = DateFormat('dd / MM / yyyy').format(state.date);
+              _dateController.text = dateFormatted;
+
+              // Catch Time from Event
+              DateTime parsedTime = DateFormat.jm().parse(state.time.format(context).toString());
+              String timeFormatted = DateFormat('HH : mm').format(parsedTime);
+              _timeController.text = timeFormatted;
+            });
           },
           builder: (Acontext, state) {
             return SafeArea(
@@ -66,6 +84,86 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   _appointmentDataSource(),
                   _resourceColl(),
                 ),
+                //
+                appointmentBuilder: (BuildContext context,
+                CalendarAppointmentDetails details) {
+                final Appointment meeting =
+                    details.appointments.first;
+                if (_controller.view != CalendarView.timelineDay) {
+                  return Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(3),
+                          height: details.bounds.height,
+                          alignment: Alignment.topLeft,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(5),
+                                topRight: Radius.circular(5)),
+                            color: meeting.color,
+                          ),
+                          child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    meeting.subject,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 3,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  
+                                ],
+                          )),
+                        ),
+                        // Container(
+                        //   height: details.bounds.height-15,
+                        //   padding: EdgeInsets.fromLTRB(3, 5, 3, 2),
+                        //   color: meeting.color.withOpacity(0.8),
+                        //   alignment: Alignment.topLeft,
+                        //   child: SingleChildScrollView(
+                        //       child: Column(
+                        //         mainAxisAlignment: MainAxisAlignment.start,
+                        //         crossAxisAlignment: CrossAxisAlignment.start,
+                        //         children: [
+                        //           Text(
+                        //             'NOTE',
+                        //             style: TextStyle(
+                        //               color: Colors.white,
+                        //               fontSize: 10,
+                        //             ),
+                        //           )
+                        //         ],
+                        //   )),
+                        // ),
+                        // Container(
+                        //   height: 20,
+                        //   decoration: BoxDecoration(
+                        //     shape: BoxShape.rectangle,
+                        //     borderRadius: BorderRadius.only(
+                        //         bottomLeft: Radius.circular(5),
+                        //         bottomRight: Radius.circular(5)),
+                        //     color: meeting.color,
+                        //   ),
+                        // ),
+                      ],
+                    ),
+                  );
+                }
+                return Container(
+                  child: Text(meeting.subject),
+                );
+              },
+
+                //
                 timeSlotViewSettings: TimeSlotViewSettings(
                   // startHour: 9,
                   // endHour: 19,
@@ -86,21 +184,14 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                 ),
                 headerStyle: CalendarHeaderStyle(textAlign: TextAlign.center),
                 onTap: (value) {
-                  // dynamic appointment = details.appointments;
-                  // DateTime date = details.date!;
-                  // CalendarElement element = details.targetElement;
-                  // print(details.targetElement == CalendarElement.resourceHeader);
-
+                  
                   if (value.targetElement != CalendarElement.header) {
-                    // setState(() {
-                    //   _details = value;
-                    //   _dateController.text =
-                    //       DateFormat('dd / MM / yyyy').format(value.date!);
-                    //   _timeController.text =
-                    //       DateFormat('HH : mm').format(value.date!);
-                    // });
 
-                    if (value.targetElement == CalendarElement.calendarCell) {
+                    // Assign Event Date to State
+                    Acontext.read<AppointmentBloc>().add(DateAppointmentEvent(date: value.date!));
+                    Acontext.read<AppointmentBloc>().add(TimeAppointmentEvent(time: TimeOfDay.fromDateTime(value.date!)));
+
+                    if (value.targetElement == CalendarElement.appointment) {
                       showModalBottomSheet(
                         context: context,
                         builder: (context) {
@@ -146,17 +237,21 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     return BlocConsumer<AppointmentBloc, AppointmentState>(
       listener: (context, state) {
         // print(state.name);
+        setState(() {
+              _nameController.text = state.name;
+        });
       },
       builder: (context, state) {
         return CupertinoTextFormFieldRow(
           placeholder: 'Enter Name',
           keyboardType: TextInputType.name,
           validator: (value) {},
-          onChanged: (value) {
+          onTap: () {
             context
                 .read<AppointmentBloc>()
-                .add(NameAppointmentEvent(name: value));
+                .add(NameAppointmentEvent(name: state.name));
           },
+          
           // controller: ,
         );
       },
@@ -167,6 +262,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     return BlocConsumer<AppointmentBloc, AppointmentState>(
       listener: (context, state) {
         // print(state.email);
+        setState(() {
+              _emailController.text = state.email;
+        });
       },
       builder: (context, state) {
         return CupertinoTextFormFieldRow(
@@ -187,8 +285,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   Widget _dateAppointment() {
     return BlocConsumer<AppointmentBloc, AppointmentState>(
       listener: (context, state) {
-        print(state.status);
-        print(state.date);
+        // print(state.status);
+        // print(state.date);
         setState(() {
           String dateFormatted = DateFormat('dd / MM / yyyy').format(state.date);
           _dateController.text = dateFormatted;
@@ -200,24 +298,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           controller: _dateController,
           readOnly: true,
           onTap: () {
-            context.read<AppointmentBloc>().add(OpenPickerAppointmentEvent(context)); 
-               
-
-            // context.read<AppointmentBloc>().add(DateAppointmentEvent(date: state.date));
-            // _dateController.text = dateFormatted;
-
-            // if (pickedDate != null) {
-            //   // print(pickedDate);
-            //   String dateFormatted =
-            //       DateFormat('dd / MM / yyyy').format(pickedDate);
-            //   // print(dateFormatted);
-              
-            //   context
-            //       .read<AppointmentBloc>()
-            //       .add(DateAppointmentEvent(date: pickedDate));
-            // } else {
-            //   print("Date is not selected");
-            // }
+            context.read<AppointmentBloc>().add(DayPickerAppointmentEvent(context)); 
           },
         );
       },
@@ -227,7 +308,14 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   Widget _timeAppointment() {
     return BlocConsumer<AppointmentBloc, AppointmentState>(
       listener: (context, state) {
+        // print(state.status);
         // print(state.time);
+        setState(() {
+          DateTime parsedTime =
+                  DateFormat.jm().parse(state.time.format(context).toString());
+          String timeFormatted = DateFormat('HH : mm').format(parsedTime);
+          _timeController.text = timeFormatted;
+        });
       },
       builder: (context, state) {
         return CupertinoTextFormFieldRow(
@@ -235,26 +323,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           controller: _timeController,
           readOnly: true,
           onTap: () async {
-            TimeOfDay? pickedTime = await showTimePicker(
-              initialTime: TimeOfDay.fromDateTime(_details.date!),
-              context: context,
-            );
-            if (pickedTime != null) {
-              // print(pickedTime.format(context));
-              DateTime parsedTime =
-                  DateFormat.jm().parse(pickedTime.format(context).toString());
-              String timeFormatted = DateFormat('HH : mm').format(parsedTime);
-              // print(formattedTime);
-              setState(() {
-                _timeController.text = timeFormatted;
-              });
-              context
-                  .read<AppointmentBloc>()
-                  .add(TimeAppointmentEvent(time: pickedTime));
-            } else {
-              print("Time is not selected");
-            }
-          },
+            context.read<AppointmentBloc>().add(TimePickerAppointmentEvent(context)); 
+          }
         );
       },
     );
@@ -374,6 +444,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     return appointments;
   }
 }
+
 
 class AppointmentDataSource extends CalendarDataSource {
   AppointmentDataSource(
