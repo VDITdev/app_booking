@@ -34,4 +34,6 @@ class TimePickerAppointmentEvent extends AppointmentEvent {
   TimePickerAppointmentEvent(this.context);
 }
 
+class LoadMoreAppointment extends AppointmentEvent {}
+
 class AddAppointmentEvent extends AppointmentEvent {}

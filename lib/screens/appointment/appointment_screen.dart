@@ -22,7 +22,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
-  CalendarController _controller = CalendarController();
+  final CalendarController _controller = CalendarController();
 
   @override
   void initState() {
@@ -60,7 +60,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
               // Catch Date from Event
               String dateFormatted =
-                  DateFormat(' dd / MM / yyyy ').format(state.date);
+                  DateFormat('dd / MM / yyyy').format(state.date);
               _dateController.text = dateFormatted;
 
               // Catch Time from Event
@@ -77,26 +77,57 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                 view: CalendarView.timelineDay,
                 showNavigationArrow: true,
                 showDatePickerButton: true,
+                // controller: _controller,
                 allowDragAndDrop: true,
                 onDragEnd: dragEnd,
                 allowAppointmentResize: true,
                 onAppointmentResizeEnd: resizeEnd,
+                // onSelectionChanged: selectionChanged,
                 dataSource: AppointmentDataSource(
-                  _appointmentDataSource(),
                   _resourceColl(),
+                  _appointmentDataSource(),
+                  
                 ),
                 headerDateFormat: 'dd / MM / yyyy',
-                headerStyle: CalendarHeaderStyle(
-                  textStyle: TextStyle(
-                    fontSize: 20,
-                    decoration: TextDecoration.combine([
-                      TextDecoration.overline,
-                      TextDecoration.underline,
-                    ]),
-                  ),
+                headerStyle: const CalendarHeaderStyle(
                   textAlign: TextAlign.center,
+                  textStyle: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
+                ),
+                // loadMoreWidgetBuilder: _loadAppointment(),
+                timeSlotViewSettings: const TimeSlotViewSettings(
+                  // startHour: 9,
+                  // endHour: 19,
+                  timeInterval:
+                      (kIsWeb) ? Duration(minutes: 15) : Duration(minutes: 60),
+                  timeFormat: 'HH:mm',
+                  timeTextStyle: TextStyle(
+                    fontSize: 12,
+                    color: Colors.black,
+                  ),
+                  timelineAppointmentHeight: 100,
+                  timeIntervalWidth: 90,
+                ),
+                resourceViewSettings: const ResourceViewSettings(
+                  showAvatar: false,
+                  displayNameTextStyle: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
                 ),
                 appointmentBuilder: (context, details) {
+
+                  // test
+
+
+                  // print(_controller.);
+
+
+
+                  //
+
                   final Appointment appointment = details.appointments.first;
                   if (_controller.view != CalendarView.timelineDay) {
                     return Scaffold(
@@ -127,31 +158,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                       ),
                     );
                   }
-                  // ???
-                  return Container(
-                    child: Text(appointment.subject),
-                  );
+                  return Container();
                 },
-                timeSlotViewSettings: const TimeSlotViewSettings(
-                  // startHour: 9,
-                  // endHour: 19,
-                  timeInterval:
-                      (kIsWeb) ? Duration(minutes: 15) : Duration(minutes: 60),
-                  timeFormat: 'HH:mm',
-                  timeTextStyle: TextStyle(
-                    fontSize: 12,
-                    color: Colors.black,
-                  ),
-                  timelineAppointmentHeight: 100,
-                  timeIntervalWidth: 90,
-                ),
-                resourceViewSettings: const ResourceViewSettings(
-                  showAvatar: false,
-                  displayNameTextStyle: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),
-                ),
+                
                 onTap: (value) {
                   if (value.targetElement != CalendarElement.header &&
                       value.targetElement != CalendarElement.viewHeader &&
@@ -345,6 +354,18 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     );
   }
 
+  // Widget _loadAppointment() {
+  //   return BlocConsumer<AppointmentBloc, AppointmentState>(
+  //     listener: (context, state) {
+  //       // TODO: implement listener
+  //     },
+  //     builder: (context, state) {
+  //       return Container(
+  //           alignment: Alignment.center, child: const CircularProgressIndicator());
+  //     },
+  //   );
+  // }
+
   void dragEnd(AppointmentDragEndDetails appointmentDragEndDetails) {
     dynamic appointment = appointmentDragEndDetails.appointment!;
     CalendarResource? sourceResource = appointmentDragEndDetails.sourceResource;
@@ -358,6 +379,26 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     DateTime? endTime = appointmentResizeEndDetails.endTime;
     CalendarResource? resourceDetails = appointmentResizeEndDetails.resource;
   }
+
+  void selectionChanged(CalendarSelectionDetails details) {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Container(
+              child: new Text("Details shown by selection changed callback")),
+          content:
+              Container(child: new Text("You have selected " + '${_dateController.text}')),
+          actions: <Widget>[
+            new TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: new Text('close'))
+          ],
+        );
+      });
+}
 
   List<CalendarResource> _resourceColl() {
     List<CalendarResource> resourceColl = <CalendarResource>[];
@@ -455,7 +496,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
 class AppointmentDataSource extends CalendarDataSource {
   AppointmentDataSource(
-      List<Appointment> source, List<CalendarResource> resourceColl) {
+    List<CalendarResource> resourceColl,
+      List<Appointment> source, ) {
     appointments = source;
     resources = resourceColl;
   }

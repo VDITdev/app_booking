@@ -1,0 +1,3 @@
+https://www.syncfusion.com/kb/12884/how-to-get-the-dropped-resource-details-in-the-flutter-calendar-sfcalendar
+https://www.syncfusion.com/kb/12900/how-to-load-the-appointment-from-json-to-calendar-with-loadmorewidgetbuilder
+https://www.syncfusion.com/kb/12658/how-to-load-appointments-on-demand-in-flutter-calendar
