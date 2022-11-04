@@ -53,17 +53,19 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         // Bloc for whole page
         child: BlocConsumer<AppointmentBloc, AppointmentState>(
           listener: (context, state) {
+            // print(state.name);
             setState(() {
-              
               _nameController.text = state.name;
               _emailController.text = state.email;
 
               // Catch Date from Event
-              String dateFormatted = DateFormat('dd / MM / yyyy').format(state.date);
+              String dateFormatted =
+                  DateFormat(' dd / MM / yyyy ').format(state.date);
               _dateController.text = dateFormatted;
 
               // Catch Time from Event
-              DateTime parsedTime = DateFormat.jm().parse(state.time.format(context).toString());
+              DateTime parsedTime =
+                  DateFormat.jm().parse(state.time.format(context).toString());
               String timeFormatted = DateFormat('HH : mm').format(parsedTime);
               _timeController.text = timeFormatted;
             });
@@ -73,7 +75,6 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
               bottom: false,
               child: SfCalendar(
                 view: CalendarView.timelineDay,
-                todayHighlightColor: Colors.blue,
                 showNavigationArrow: true,
                 showDatePickerButton: true,
                 allowDragAndDrop: true,
@@ -84,87 +85,54 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                   _appointmentDataSource(),
                   _resourceColl(),
                 ),
-                //
-                appointmentBuilder: (BuildContext context,
-                CalendarAppointmentDetails details) {
-                final Appointment meeting =
-                    details.appointments.first;
-                if (_controller.view != CalendarView.timelineDay) {
-                  return Container(
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(3),
-                          height: details.bounds.height,
-                          alignment: Alignment.topLeft,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(5),
-                                topRight: Radius.circular(5)),
-                            color: meeting.color,
+                headerDateFormat: 'dd / MM / yyyy',
+                headerStyle: CalendarHeaderStyle(
+                  textStyle: TextStyle(
+                    fontSize: 20,
+                    decoration: TextDecoration.combine([
+                      TextDecoration.overline,
+                      TextDecoration.underline,
+                    ]),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                appointmentBuilder: (context, details) {
+                  final Appointment appointment = details.appointments.first;
+                  if (_controller.view != CalendarView.timelineDay) {
+                    return Scaffold(
+                      body: Container(
+                        height: details.bounds.height,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(color: appointment.color),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                appointment.notes!,
+                                // meeting.subject,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 3,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
-                          child: SingleChildScrollView(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    meeting.subject,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    maxLines: 3,
-                                    softWrap: false,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  
-                                ],
-                          )),
                         ),
-                        // Container(
-                        //   height: details.bounds.height-15,
-                        //   padding: EdgeInsets.fromLTRB(3, 5, 3, 2),
-                        //   color: meeting.color.withOpacity(0.8),
-                        //   alignment: Alignment.topLeft,
-                        //   child: SingleChildScrollView(
-                        //       child: Column(
-                        //         mainAxisAlignment: MainAxisAlignment.start,
-                        //         crossAxisAlignment: CrossAxisAlignment.start,
-                        //         children: [
-                        //           Text(
-                        //             'NOTE',
-                        //             style: TextStyle(
-                        //               color: Colors.white,
-                        //               fontSize: 10,
-                        //             ),
-                        //           )
-                        //         ],
-                        //   )),
-                        // ),
-                        // Container(
-                        //   height: 20,
-                        //   decoration: BoxDecoration(
-                        //     shape: BoxShape.rectangle,
-                        //     borderRadius: BorderRadius.only(
-                        //         bottomLeft: Radius.circular(5),
-                        //         bottomRight: Radius.circular(5)),
-                        //     color: meeting.color,
-                        //   ),
-                        // ),
-                      ],
-                    ),
+                      ),
+                    );
+                  }
+                  // ???
+                  return Container(
+                    child: Text(appointment.subject),
                   );
-                }
-                return Container(
-                  child: Text(meeting.subject),
-                );
-              },
-
-                //
-                timeSlotViewSettings: TimeSlotViewSettings(
+                },
+                timeSlotViewSettings: const TimeSlotViewSettings(
                   // startHour: 9,
                   // endHour: 19,
                   timeInterval:
@@ -174,31 +142,42 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     fontSize: 12,
                     color: Colors.black,
                   ),
+                  timelineAppointmentHeight: 100,
+                  timeIntervalWidth: 90,
                 ),
-                resourceViewSettings: ResourceViewSettings(
+                resourceViewSettings: const ResourceViewSettings(
                   showAvatar: false,
                   displayNameTextStyle: TextStyle(
                     fontSize: 16,
                     color: Colors.black,
                   ),
                 ),
-                headerStyle: CalendarHeaderStyle(textAlign: TextAlign.center),
                 onTap: (value) {
-                  
-                  if (value.targetElement != CalendarElement.header) {
-
-                    // Assign Event Date to State
-                    Acontext.read<AppointmentBloc>().add(DateAppointmentEvent(date: value.date!));
-                    Acontext.read<AppointmentBloc>().add(TimeAppointmentEvent(time: TimeOfDay.fromDateTime(value.date!)));
+                  if (value.targetElement != CalendarElement.header &&
+                      value.targetElement != CalendarElement.viewHeader &&
+                      value.targetElement != CalendarElement.resourceHeader) {
+                    Acontext.read<AppointmentBloc>()
+                        .add(DateAppointmentEvent(date: value.date!));
+                    Acontext.read<AppointmentBloc>().add(TimeAppointmentEvent(
+                        time: TimeOfDay.fromDateTime(value.date!)));
 
                     if (value.targetElement == CalendarElement.appointment) {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (context) {
-                          return _fromBuilder();
-                        },
-                      );
-                    } else {}
+                      final Appointment appointment = value.appointments?.first;
+                      Acontext.read<AppointmentBloc>()
+                          .add(NameAppointmentEvent(name: appointment.notes!));
+                      Acontext.read<AppointmentBloc>().add(
+                          EmailAppointmentEvent(
+                              email: appointment.resourceIds![1].toString()));
+                    } else {
+                      Acontext.read<AppointmentBloc>()
+                          .add(InitAppointmentEvent());
+                    }
+                    showModalBottomSheet(
+                      context: context,
+                      builder: (context) {
+                        return _fromBuilder();
+                      },
+                    );
                   } else {}
                 },
               ),
@@ -211,22 +190,23 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 
   Widget _fromBuilder() {
     return BlocProvider(
-
       // add Init
       create: (context) => AppointmentBloc(),
       child: Form(
         key: _formKey,
-        child: Wrap(
-          spacing: 10,
-          alignment: WrapAlignment.center,
-          children: [
-            _nameAppointment(),
-            _emailAppointment(),
-            _dateAppointment(),
-            _timeAppointment(),
-            _addAppointment(),
-            SizedBox(height: 60)
-          ],
+        child: SafeArea(
+          minimum: EdgeInsets.all(20),
+          child: Wrap(
+            spacing: 10,
+            alignment: WrapAlignment.center,
+            children: [
+              _nameAppointment(),
+              _emailAppointment(),
+              _dateAppointment(),
+              _timeAppointment(),
+              _addAppointment(),
+            ],
+          ),
         ),
       ),
     );
@@ -238,21 +218,27 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       listener: (context, state) {
         // print(state.name);
         setState(() {
-              _nameController.text = state.name;
+          _nameController.text = state.name;
         });
       },
       builder: (context, state) {
         return CupertinoTextFormFieldRow(
           placeholder: 'Enter Name',
-          keyboardType: TextInputType.name,
-          validator: (value) {},
-          onTap: () {
+          keyboardType: TextInputType.text,
+          controller: _nameController,
+          textCapitalization: TextCapitalization.words,
+          autocorrect: false,
+          enableSuggestions: true,
+          validator: (checkValue) {
             context
                 .read<AppointmentBloc>()
-                .add(NameAppointmentEvent(name: state.name));
+                .add(NameAppointmentEvent(name: checkValue!));
           },
-          
-          // controller: ,
+          onFieldSubmitted: (updateValue) {
+            context
+                .read<AppointmentBloc>()
+                .add(NameAppointmentEvent(name: updateValue));
+          },
         );
       },
     );
@@ -263,18 +249,24 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       listener: (context, state) {
         // print(state.email);
         setState(() {
-              _emailController.text = state.email;
+          _emailController.text = state.email;
         });
       },
       builder: (context, state) {
         return CupertinoTextFormFieldRow(
           placeholder: 'Enter Email',
           keyboardType: TextInputType.emailAddress,
-          validator: (value) {},
-          onChanged: (value) {
+          controller: _emailController,
+          autocorrect: false,
+          validator: (checkValue) {
             context
                 .read<AppointmentBloc>()
-                .add(EmailAppointmentEvent(email: value));
+                .add(EmailAppointmentEvent(email: checkValue!));
+          },
+          onFieldSubmitted: (updateValue) {
+            context
+                .read<AppointmentBloc>()
+                .add(EmailAppointmentEvent(email: updateValue));
           },
           // controller: ,
         );
@@ -288,7 +280,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         // print(state.status);
         // print(state.date);
         setState(() {
-          String dateFormatted = DateFormat('dd / MM / yyyy').format(state.date);
+          String dateFormatted =
+              DateFormat('dd / MM / yyyy').format(state.date);
           _dateController.text = dateFormatted;
         });
       },
@@ -298,7 +291,9 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           controller: _dateController,
           readOnly: true,
           onTap: () {
-            context.read<AppointmentBloc>().add(DayPickerAppointmentEvent(context)); 
+            context
+                .read<AppointmentBloc>()
+                .add(DayPickerAppointmentEvent(context));
           },
         );
       },
@@ -312,20 +307,21 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         // print(state.time);
         setState(() {
           DateTime parsedTime =
-                  DateFormat.jm().parse(state.time.format(context).toString());
+              DateFormat.jm().parse(state.time.format(context).toString());
           String timeFormatted = DateFormat('HH : mm').format(parsedTime);
           _timeController.text = timeFormatted;
         });
       },
       builder: (context, state) {
         return CupertinoTextFormFieldRow(
-          placeholder: 'Enter Time',
-          controller: _timeController,
-          readOnly: true,
-          onTap: () async {
-            context.read<AppointmentBloc>().add(TimePickerAppointmentEvent(context)); 
-          }
-        );
+            placeholder: 'Enter Time',
+            controller: _timeController,
+            readOnly: true,
+            onTap: () {
+              context
+                  .read<AppointmentBloc>()
+                  .add(TimePickerAppointmentEvent(context));
+            });
       },
     );
   }
@@ -369,32 +365,32 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
       [
         CalendarResource(
           displayName: 'John',
-          id: '0000',
+          id: '0001',
           color: Colors.redAccent,
         ),
         CalendarResource(
           displayName: 'Mark',
-          id: '0001',
+          id: '0002',
           color: Colors.tealAccent,
         ),
         CalendarResource(
           displayName: 'Selina',
-          id: '0002',
+          id: '0003',
           color: Colors.lightBlueAccent,
         ),
         CalendarResource(
           displayName: 'Tune',
-          id: '0003',
+          id: '0004',
           color: Colors.lightGreenAccent,
         ),
         CalendarResource(
           displayName: 'Staff 1',
-          id: '0004',
+          id: '0005',
           color: Colors.amberAccent,
         ),
         CalendarResource(
           displayName: 'Staff 2',
-          id: '0005',
+          id: '0006',
           color: Colors.indigoAccent,
         ),
       ],
@@ -415,36 +411,47 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           startTime: startTime,
           endTime: endTime,
           subject: 'Nails',
+          notes: 'NAME 1',
           color: Colors.orange,
-          resourceIds: ['0000'],
+          resourceIds: ['0001', '111@111.com'],
         ),
         Appointment(
           startTime: startTime,
           endTime: endTime,
           subject: 'Spa',
+          notes: 'NAME 2',
           color: Colors.pinkAccent,
-          resourceIds: ['0001'],
+          resourceIds: ['0002', '222@222.com'],
         ),
         Appointment(
           startTime: startTime,
           endTime: endTime,
           subject: 'Beauty',
+          notes: 'NAME 3',
           color: Colors.blueGrey,
-          resourceIds: ['0002'],
+          resourceIds: ['0003', '333@333.com'],
         ),
         Appointment(
           startTime: startTime,
           endTime: endTime,
           subject: 'Massage',
+          notes: 'NAME 4',
           color: Colors.deepPurpleAccent,
-          resourceIds: ['0003'],
+          resourceIds: ['0004', '444@444.com'],
+        ),
+        Appointment(
+          startTime: startTime,
+          endTime: endTime,
+          subject: 'Haircut',
+          notes: 'NAME 5',
+          color: Colors.lightGreen,
+          resourceIds: ['0005', '555@555.com'],
         )
       ],
     );
     return appointments;
   }
 }
-
 
 class AppointmentDataSource extends CalendarDataSource {
   AppointmentDataSource(
@@ -453,8 +460,13 @@ class AppointmentDataSource extends CalendarDataSource {
     resources = resourceColl;
   }
 
-  @override
-  List<Object> getResourceIds(int index) {
-    return appointments![index].ids;
-  }
+  // ??? https://www.syncfusion.com/kb/11204/how-to-design-and-configure-your-appointment-editor-in-flutter-calendar
+  // @override
+  // List<Object> getResourceIds(int index) {
+  //   return appointments![index].ids;
+  // }
+  // @override
+  // String getLocation(int index) {
+  //   return appointments![index].place;
+  // }
 }
