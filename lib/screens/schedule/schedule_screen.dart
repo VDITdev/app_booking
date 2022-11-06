@@ -1,26 +1,26 @@
-import 'package:app_booking/src/appointment/appointment_bloc.dart';
-import 'package:app_booking/utils/state/status.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-class AppointmentScreen extends StatefulWidget {
-  const AppointmentScreen({Key? key}) : super(key: key);
+import 'package:app_booking/src/schedule/schedule_bloc.dart';
+
+class ScheduleScreen extends StatefulWidget {
+  const ScheduleScreen({Key? key}) : super(key: key);
 
   @override
-  _AppointmentScreenState createState() => _AppointmentScreenState();
+  _ScheduleScreenState createState() => _ScheduleScreenState();
 }
 
-class _AppointmentScreenState extends State<AppointmentScreen> {
+class _ScheduleScreenState extends State<ScheduleScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  // final TextEditingController _emailController = TextEditingController();
 
   final CalendarController _controller = CalendarController();
 
@@ -29,7 +29,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     _dateController.text = ""; //set the initial value of text field
     _timeController.text = ""; //set the initial value of text field
     _nameController.text = ""; //set the initial value of text field
-    _emailController.text = ""; //set the initial value of text field
+    // _emailController.text = ""; //set the initial value of text field
 
     super.initState();
   }
@@ -37,26 +37,45 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AppointmentBloc(),
-      child: CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
+      create: (context) => ScheduleBloc(),
+      child: Scaffold(
+        appBar: CupertinoNavigationBar(
           padding: EdgeInsetsDirectional.zero,
           leading: CupertinoNavigationBarBackButton(previousPageTitle: 'Back'),
-          middle: Text('Appointment'),
-          trailing: CupertinoButton(
-            padding: EdgeInsets.zero,
-            child: Icon(Icons.circle_sharp, color: Colors.grey),
-            onPressed: () {},
+          middle: Text('Schedule'),
+          trailing: PopupMenuButton(
+            position: PopupMenuPosition.under,
+            icon: Icon(
+              Icons.remove_red_eye,
+              color: Colors.blue,
+            ),
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<int>(
+                  value: 0,
+                  child: Text('By Day'),
+                  onTap: (() {
+                    _controller.view = CalendarView.timelineDay;
+                  }),
+                ),
+                PopupMenuItem<int>(
+                  value: 1,
+                  child: Text('By Month'),
+                  onTap: (() {
+                    _controller.view = CalendarView.timelineMonth;
+                  }),
+                ),
+              ];
+            },
           ),
         ),
-
         // Bloc for whole page
-        child: BlocConsumer<AppointmentBloc, AppointmentState>(
+        body: BlocConsumer<ScheduleBloc, ScheduleState>(
           listener: (context, state) {
             // print(state.name);
             setState(() {
               _nameController.text = state.name;
-              _emailController.text = state.email;
+              // _emailController.text = state.email;
 
               // Catch Date from Event
               String dateFormatted =
@@ -74,19 +93,18 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             return SafeArea(
               bottom: false,
               child: SfCalendar(
-                view: CalendarView.timelineDay,
+                view: CalendarView.timelineMonth,
+                controller: _controller,
                 showNavigationArrow: true,
                 showDatePickerButton: true,
-                // controller: _controller,
                 allowDragAndDrop: true,
-                onDragEnd: dragEnd,
-                allowAppointmentResize: true,
-                onAppointmentResizeEnd: resizeEnd,
+                // onDragEnd: dragEnd,
+                // allowAppointmentResize: true,
+                // onAppointmentResizeEnd: resizeEnd,
                 // onSelectionChanged: selectionChanged,
                 dataSource: AppointmentDataSource(
                   _resourceColl(),
                   _appointmentDataSource(),
-                  
                 ),
                 headerDateFormat: 'dd / MM / yyyy',
                 headerStyle: const CalendarHeaderStyle(
@@ -96,90 +114,82 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                     fontSize: 20,
                   ),
                 ),
+                // specialRegions: _getTimeRegions(),
+                // timeRegionBuilder: timeRegionBuilder,
                 // loadMoreWidgetBuilder: _loadAppointment(),
                 timeSlotViewSettings: const TimeSlotViewSettings(
                   // startHour: 9,
                   // endHour: 19,
-                  timeInterval:
-                      (kIsWeb) ? Duration(minutes: 15) : Duration(minutes: 60),
-                  timeFormat: 'HH:mm',
-                  timeTextStyle: TextStyle(
-                    fontSize: 12,
-                    color: Colors.black,
-                  ),
+                  // timeInterval:
+                  //     (kIsWeb) ? Duration(minutes: 15) : Duration(minutes: 60),
+                  // timeFormat: 'HH:mm',
+                  // timeTextStyle: TextStyle(
+                  //   fontSize: 12,
+                  //   color: Colors.black,
+                  // ),
                   timelineAppointmentHeight: 100,
-                  timeIntervalWidth: 90,
+                  timeIntervalWidth: 80,
+                  // numberOfDaysInView: 7,
                 ),
                 resourceViewSettings: const ResourceViewSettings(
                   showAvatar: false,
                   displayNameTextStyle: TextStyle(
                     fontSize: 16,
-                    color: Colors.black,
+                    color: Colors.black87,
                   ),
                 ),
+                // monthViewSettings: MonthViewSettings(showAgenda: true),
                 appointmentBuilder: (context, details) {
-
-                  // test
-
-
-                  // print(_controller.);
-
-
-
-                  //
-
                   final Appointment appointment = details.appointments.first;
-                  if (_controller.view != CalendarView.timelineDay) {
-                    return Scaffold(
-                      body: Container(
-                        height: details.bounds.height,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(color: appointment.color),
-                        child: SingleChildScrollView(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                appointment.notes!,
-                                // meeting.subject,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                maxLines: 3,
-                                softWrap: false,
-                                overflow: TextOverflow.ellipsis,
+                  // if (_controller.view != CalendarView.timelineDay) {
+                  return Scaffold(
+                    body: Container(
+                      height: details.bounds.height,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(color: appointment.color),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              appointment.notes!,
+                              // meeting.subject,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
                               ),
-                            ],
-                          ),
+                              maxLines: 3,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  }
+                    ),
+                  );
+                  // }
                   return Container();
                 },
-                
+
                 onTap: (value) {
                   if (value.targetElement != CalendarElement.header &&
                       value.targetElement != CalendarElement.viewHeader &&
                       value.targetElement != CalendarElement.resourceHeader) {
-                    Acontext.read<AppointmentBloc>()
-                        .add(DateAppointmentEvent(date: value.date!));
-                    Acontext.read<AppointmentBloc>().add(TimeAppointmentEvent(
+                    Acontext.read<ScheduleBloc>()
+                        .add(DateScheduleEvent(date: value.date!));
+                    Acontext.read<ScheduleBloc>().add(TimeScheduleEvent(
                         time: TimeOfDay.fromDateTime(value.date!)));
 
                     if (value.targetElement == CalendarElement.appointment) {
                       final Appointment appointment = value.appointments?.first;
-                      Acontext.read<AppointmentBloc>()
-                          .add(NameAppointmentEvent(name: appointment.notes!));
-                      Acontext.read<AppointmentBloc>().add(
-                          EmailAppointmentEvent(
-                              email: appointment.resourceIds![1].toString()));
+                      Acontext.read<ScheduleBloc>()
+                          .add(NameScheduleEvent(name: appointment.notes!));
+                      // Acontext.read<ScheduleBloc>().add(EmailScheduleEvent(
+                      //     email: appointment.resourceIds![1].toString()));
                     } else {
-                      Acontext.read<AppointmentBloc>()
-                          .add(InitAppointmentEvent());
+                      Acontext.read<ScheduleBloc>().add(InitScheduleEvent());
                     }
                     showModalBottomSheet(
                       context: context,
@@ -200,7 +210,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   Widget _fromBuilder() {
     return BlocProvider(
       // add Init
-      create: (context) => AppointmentBloc(),
+      create: (context) => ScheduleBloc(),
       child: Form(
         key: _formKey,
         child: SafeArea(
@@ -210,7 +220,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             alignment: WrapAlignment.center,
             children: [
               _nameAppointment(),
-              _emailAppointment(),
+              // _emailAppointment(),
               _dateAppointment(),
               _timeAppointment(),
               _addAppointment(),
@@ -223,7 +233,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   }
 
   Widget _nameAppointment() {
-    return BlocConsumer<AppointmentBloc, AppointmentState>(
+    return BlocConsumer<ScheduleBloc, ScheduleState>(
       listener: (context, state) {
         // print(state.name);
         setState(() {
@@ -240,51 +250,51 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           enableSuggestions: true,
           validator: (checkValue) {
             context
-                .read<AppointmentBloc>()
-                .add(NameAppointmentEvent(name: checkValue!));
+                .read<ScheduleBloc>()
+                .add(NameScheduleEvent(name: checkValue!));
           },
           onFieldSubmitted: (updateValue) {
             context
-                .read<AppointmentBloc>()
-                .add(NameAppointmentEvent(name: updateValue));
+                .read<ScheduleBloc>()
+                .add(NameScheduleEvent(name: updateValue));
           },
         );
       },
     );
   }
 
-  Widget _emailAppointment() {
-    return BlocConsumer<AppointmentBloc, AppointmentState>(
-      listener: (context, state) {
-        // print(state.email);
-        setState(() {
-          _emailController.text = state.email;
-        });
-      },
-      builder: (context, state) {
-        return CupertinoTextFormFieldRow(
-          placeholder: 'Enter Email',
-          keyboardType: TextInputType.emailAddress,
-          controller: _emailController,
-          autocorrect: false,
-          validator: (checkValue) {
-            context
-                .read<AppointmentBloc>()
-                .add(EmailAppointmentEvent(email: checkValue!));
-          },
-          onFieldSubmitted: (updateValue) {
-            context
-                .read<AppointmentBloc>()
-                .add(EmailAppointmentEvent(email: updateValue));
-          },
-          // controller: ,
-        );
-      },
-    );
-  }
+  // Widget _emailAppointment() {
+  //   return BlocConsumer<ScheduleBloc, ScheduleState>(
+  //     listener: (context, state) {
+  //       // print(state.email);
+  //       setState(() {
+  //         _emailController.text = state.email;
+  //       });
+  //     },
+  //     builder: (context, state) {
+  //       return CupertinoTextFormFieldRow(
+  //         placeholder: 'Enter Email',
+  //         keyboardType: TextInputType.emailAddress,
+  //         controller: _emailController,
+  //         autocorrect: false,
+  //         validator: (checkValue) {
+  //           context
+  //               .read<ScheduleBloc>()
+  //               .add(EmailScheduleEvent(email: checkValue!));
+  //         },
+  //         onFieldSubmitted: (updateValue) {
+  //           context
+  //               .read<ScheduleBloc>()
+  //               .add(EmailScheduleEvent(email: updateValue));
+  //         },
+  //         // controller: ,
+  //       );
+  //     },
+  //   );
+  // }
 
   Widget _dateAppointment() {
-    return BlocConsumer<AppointmentBloc, AppointmentState>(
+    return BlocConsumer<ScheduleBloc, ScheduleState>(
       listener: (context, state) {
         // print(state.status);
         // print(state.date);
@@ -300,9 +310,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           controller: _dateController,
           readOnly: true,
           onTap: () {
-            context
-                .read<AppointmentBloc>()
-                .add(DayPickerAppointmentEvent(context));
+            context.read<ScheduleBloc>().add(DayPickerScheduleEvent(context));
           },
         );
       },
@@ -310,7 +318,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   }
 
   Widget _timeAppointment() {
-    return BlocConsumer<AppointmentBloc, AppointmentState>(
+    return BlocConsumer<ScheduleBloc, ScheduleState>(
       listener: (context, state) {
         // print(state.status);
         // print(state.time);
@@ -328,15 +336,15 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
             readOnly: true,
             onTap: () {
               context
-                  .read<AppointmentBloc>()
-                  .add(TimePickerAppointmentEvent(context));
+                  .read<ScheduleBloc>()
+                  .add(TimePickerScheduleEvent(context));
             });
       },
     );
   }
 
   Widget _addAppointment() {
-    return BlocConsumer<AppointmentBloc, AppointmentState>(
+    return BlocConsumer<ScheduleBloc, ScheduleState>(
       listener: (context, state) {
         // print(state.status);
       },
@@ -345,7 +353,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           child: Text('Add'),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              context.read<AppointmentBloc>().add(AddAppointmentEvent());
+              context.read<ScheduleBloc>().add(AddScheduleEvent());
             }
             // Navigator.pop(context);
           },
@@ -354,8 +362,54 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     );
   }
 
+  // Widget timeRegionBuilder(
+  //     BuildContext context, TimeRegionDetails timeRegionDetails) {
+  //   if (timeRegionDetails.region.text == "Lunch") {
+  //     return Container(
+  //       color: timeRegionDetails.region.color,
+  //       alignment: Alignment.center,
+  //       child: Icon(
+  //         Icons.restaurant,
+  //         color: Colors.grey.withOpacity(0.5),
+  //       ),
+  //     );
+  //   } else if (timeRegionDetails.region.text == "WeekEnd") {
+  //     return Container(
+  //       color: timeRegionDetails.region.color,
+  //       alignment: Alignment.center,
+  //       child: Icon(
+  //         Icons.weekend,
+  //         color: Colors.grey.withOpacity(0.5),
+  //       ),
+  //     );
+  //   } else {
+  //     return CircularProgressIndicator();
+  //   }
+  // }
+
+  // List<TimeRegion> _getTimeRegions() {
+  //   final List<TimeRegion> regions = <TimeRegion>[];
+  //   DateTime date = DateTime.now();
+  //   regions.add(TimeRegion(
+  //     startTime: DateTime.now(),
+  //     endTime: DateTime.now().add(Duration(days: 14)),
+  //     enablePointerInteraction: true,
+  //     color: Colors.grey.withOpacity(0.2),
+  //     recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
+  //     text: 'Lunch',
+  //   ));
+  //   regions.add(TimeRegion(
+  //     startTime: DateTime.now(),
+  //     endTime: DateTime.now().add(Duration(days: 14)),
+  //     recurrenceRule: 'FREQ=WEEKLY;INTERVAL=1;BYDAY=SAT,SUN',
+  //     color: Color(0xffbD3D3D3),
+  //     text: 'WeekEnd',
+  //   ));
+  //   return regions;
+  // }
+
   // Widget _loadAppointment() {
-  //   return BlocConsumer<AppointmentBloc, AppointmentState>(
+  //   return BlocConsumer<ScheduleBloc, ScheduleState>(
   //     listener: (context, state) {
   //       // TODO: implement listener
   //     },
@@ -366,39 +420,40 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
   //   );
   // }
 
-  void dragEnd(AppointmentDragEndDetails appointmentDragEndDetails) {
-    dynamic appointment = appointmentDragEndDetails.appointment!;
-    CalendarResource? sourceResource = appointmentDragEndDetails.sourceResource;
-    CalendarResource? targetResource = appointmentDragEndDetails.targetResource;
-    DateTime? droppingTime = appointmentDragEndDetails.droppingTime;
-  }
+  // void dragEnd(AppointmentDragEndDetails appointmentDragEndDetails) {
+  //   dynamic appointment = appointmentDragEndDetails.appointment!;
+  //   CalendarResource? sourceResource = appointmentDragEndDetails.sourceResource;
+  //   CalendarResource? targetResource = appointmentDragEndDetails.targetResource;
+  //   DateTime? droppingTime = appointmentDragEndDetails.droppingTime;
+  // }
 
-  void resizeEnd(AppointmentResizeEndDetails appointmentResizeEndDetails) {
-    dynamic appointment = appointmentResizeEndDetails.appointment;
-    DateTime? startTime = appointmentResizeEndDetails.startTime;
-    DateTime? endTime = appointmentResizeEndDetails.endTime;
-    CalendarResource? resourceDetails = appointmentResizeEndDetails.resource;
-  }
+  // void resizeEnd(AppointmentResizeEndDetails appointmentResizeEndDetails) {
+  //   dynamic appointment = appointmentResizeEndDetails.appointment;
+  //   DateTime? startTime = appointmentResizeEndDetails.startTime;
+  //   DateTime? endTime = appointmentResizeEndDetails.endTime;
+  //   CalendarResource? resourceDetails = appointmentResizeEndDetails.resource;
+  // }
 
-  void selectionChanged(CalendarSelectionDetails details) {
-  showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Container(
-              child: new Text("Details shown by selection changed callback")),
-          content:
-              Container(child: new Text("You have selected " + '${_dateController.text}')),
-          actions: <Widget>[
-            new TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: new Text('close'))
-          ],
-        );
-      });
-}
+  // void selectionChanged(CalendarSelectionDetails details) {
+  //   showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return AlertDialog(
+  //           title: Container(
+  //               child: new Text("Details shown by selection changed callback")),
+  //           content: Container(
+  //               child:
+  //                   new Text("You have selected " + '${_dateController.text}')),
+  //           actions: <Widget>[
+  //             new TextButton(
+  //                 onPressed: () {
+  //                   Navigator.of(context).pop();
+  //                 },
+  //                 child: new Text('close'))
+  //           ],
+  //         );
+  //       });
+  // }
 
   List<CalendarResource> _resourceColl() {
     List<CalendarResource> resourceColl = <CalendarResource>[];
@@ -412,17 +467,17 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
         CalendarResource(
           displayName: 'Mark',
           id: '0002',
-          color: Colors.tealAccent,
+          color: Colors.orange,
         ),
         CalendarResource(
           displayName: 'Selina',
           id: '0003',
-          color: Colors.lightBlueAccent,
+          color: Colors.lightGreen,
         ),
         CalendarResource(
           displayName: 'Tune',
           id: '0004',
-          color: Colors.lightGreenAccent,
+          color: Colors.tealAccent,
         ),
         CalendarResource(
           displayName: 'Staff 1',
@@ -445,7 +500,7 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
     final DateTime startTime =
         DateTime(today.year, today.month, today.day, today.hour);
     final DateTime endTime = startTime.add(const Duration(hours: 1));
-
+    // DateTime exceptionDate = DateTime(2022, 11, 11);
     appointments.addAll(
       [
         Appointment(
@@ -453,40 +508,43 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
           endTime: endTime,
           subject: 'Nails',
           notes: 'NAME 1',
-          color: Colors.orange,
-          resourceIds: ['0001', '111@111.com'],
+          color: Colors.lightBlueAccent,
+          resourceIds: ['0001'],
+          // recurrenceRule: 'FREQ=DAILY;INTERVAL=1;COUNT=10',
         ),
         Appointment(
           startTime: startTime,
           endTime: endTime,
           subject: 'Spa',
           notes: 'NAME 2',
-          color: Colors.pinkAccent,
-          resourceIds: ['0002', '222@222.com'],
+          color: Colors.lightBlueAccent,
+          resourceIds: ['0002'],
+          // recurrenceRule: 'FREQ=DAILY;COUNT=20',
+          // recurrenceExceptionDates: <DateTime>[exceptionDate]
         ),
         Appointment(
           startTime: startTime,
           endTime: endTime,
           subject: 'Beauty',
           notes: 'NAME 3',
-          color: Colors.blueGrey,
-          resourceIds: ['0003', '333@333.com'],
+          color: Colors.lightBlueAccent,
+          resourceIds: ['0003'],
         ),
         Appointment(
           startTime: startTime,
           endTime: endTime,
           subject: 'Massage',
           notes: 'NAME 4',
-          color: Colors.deepPurpleAccent,
-          resourceIds: ['0004', '444@444.com'],
+          color: Colors.lightBlueAccent,
+          resourceIds: ['0004'],
         ),
         Appointment(
           startTime: startTime,
           endTime: endTime,
           subject: 'Haircut',
           notes: 'NAME 5',
-          color: Colors.lightGreen,
-          resourceIds: ['0005', '555@555.com'],
+          color: Colors.lightBlueAccent,
+          resourceIds: ['0005'],
         )
       ],
     );
@@ -497,7 +555,8 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
 class AppointmentDataSource extends CalendarDataSource {
   AppointmentDataSource(
     List<CalendarResource> resourceColl,
-      List<Appointment> source, ) {
+    List<Appointment> source,
+  ) {
     appointments = source;
     resources = resourceColl;
   }

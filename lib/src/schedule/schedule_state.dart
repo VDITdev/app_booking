@@ -1,13 +1,13 @@
-part of 'appointment_bloc.dart';
+part of 'schedule_bloc.dart';
 
-class AppointmentState {
+class ScheduleState {
   final String name;
   final String email;
   final DateTime date;
   final TimeOfDay time;
   final Status status;
 
-  AppointmentState({
+  ScheduleState({
     this.name = '',
     this.email = '',
     required this.date,
@@ -15,14 +15,14 @@ class AppointmentState {
     this.status = const StatusInitial(),
   });
 
-  AppointmentState copyWith({
+  ScheduleState copyWith({
     String? name,
     String? email,
     DateTime? date,
     TimeOfDay? time,
     Status? status,
   }) {
-    return AppointmentState(
+    return ScheduleState(
       name: name ?? this.name,
       email: email ?? this.email,
       date: date ?? this.date,
@@ -33,6 +33,6 @@ class AppointmentState {
 
   @override
   String toString() {
-    return 'AppointmentState(name: $name, email: $email, date: $date, time: $time, status: $status)';
+    return 'ScheduleState(name: $name, email: $email, date: $date, time: $time, status: $status)';
   }
 }

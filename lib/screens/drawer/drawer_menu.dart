@@ -1,5 +1,5 @@
-import 'package:app_booking/screens/appointment/appointment_screen.dart';
-import 'package:app_booking/screens/appointment/calendar_screen.dart';
+import 'package:app_booking/screens/schedule/schedule_screen.dart';
+import 'package:app_booking/screens/schedule/calendar_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -48,10 +48,6 @@ class DrawerMenu extends StatelessWidget {
             title: const Text(' Appointment '),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                CupertinoPageRoute(builder: (context) => AppointmentScreen()),
-              );
             },
           ),
           ListTile(
@@ -66,6 +62,10 @@ class DrawerMenu extends StatelessWidget {
             title: const Text(' Manager '),
             onTap: () {
               Navigator.pop(context);
+              Navigator.push(
+                context,
+                CupertinoPageRoute(builder: (context) => ScheduleScreen()),
+              );
             },
           ),
           ListTile(

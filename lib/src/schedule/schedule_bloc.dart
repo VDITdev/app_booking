@@ -4,28 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-part 'appointment_event.dart';
-part 'appointment_state.dart';
+part 'schedule_event.dart';
+part 'schedule_state.dart';
 
-class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
-  AppointmentBloc()
-      : super(AppointmentState(date: DateTime.now(), time: TimeOfDay.now()));
+class ScheduleBloc extends Bloc<ScheduleEvent, ScheduleState> {
+  ScheduleBloc()
+      : super(ScheduleState(date: DateTime.now(), time: TimeOfDay.now()));
 
   @override
-  Stream<AppointmentState> mapEventToState(AppointmentEvent event) async* {
-    if (event is InitAppointmentEvent) {
+  Stream<ScheduleState> mapEventToState(ScheduleEvent event) async* {
+    if (event is InitScheduleEvent) {
       yield state.copyWith(name: '', email: '');
     }
-    if (event is NameAppointmentEvent) {
+    if (event is NameScheduleEvent) {
       yield state.copyWith(name: event.name);
     }
-    if (event is EmailAppointmentEvent) {
+    if (event is EmailScheduleEvent) {
       yield state.copyWith(email: event.email);
     }
-    if (event is DateAppointmentEvent) {
+    if (event is DateScheduleEvent) {
       yield state.copyWith(date: event.date);
     }
-    if (event is DayPickerAppointmentEvent) {
+    if (event is DayPickerScheduleEvent) {
       try {
         DateTime? pickedDate = await showDatePicker(
             context: event.context,
@@ -40,10 +40,10 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
         yield state.copyWith(status: StatusFailed(e: e));
       }
     }
-    if (event is TimeAppointmentEvent) {
+    if (event is TimeScheduleEvent) {
       yield state.copyWith(time: event.time);
     }
-    if (event is TimePickerAppointmentEvent) {
+    if (event is TimePickerScheduleEvent) {
       try {
         TimeOfDay? pickedTime = await showTimePicker(
           context: event.context,
@@ -58,7 +58,7 @@ class AppointmentBloc extends Bloc<AppointmentEvent, AppointmentState> {
       }
     }
 
-    if (event is AddAppointmentEvent) {
+    if (event is AddScheduleEvent) {
       try {
         print(state.toString());
         yield state.copyWith(status: StatusSucess());
