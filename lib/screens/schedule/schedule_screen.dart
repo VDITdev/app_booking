@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:multi_split_view/multi_split_view.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import 'package:app_booking/src/schedule/schedule_bloc.dart';
@@ -24,13 +25,15 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   final CalendarController _controller = CalendarController();
 
+  late String _headerDateFormat;
+
   @override
   void initState() {
     _dateController.text = ""; //set the initial value of text field
     _timeController.text = ""; //set the initial value of text field
     _nameController.text = ""; //set the initial value of text field
     // _emailController.text = ""; //set the initial value of text field
-
+    _headerDateFormat = '';
     super.initState();
   }
 
@@ -43,31 +46,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           padding: EdgeInsetsDirectional.zero,
           leading: CupertinoNavigationBarBackButton(previousPageTitle: 'Back'),
           middle: Text('Schedule'),
-          trailing: PopupMenuButton(
-            position: PopupMenuPosition.under,
-            icon: Icon(
-              Icons.remove_red_eye,
-              color: Colors.blue,
-            ),
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem<int>(
-                  value: 0,
-                  child: Text('By Day'),
-                  onTap: (() {
-                    _controller.view = CalendarView.timelineDay;
-                  }),
-                ),
-                PopupMenuItem<int>(
-                  value: 1,
-                  child: Text('By Month'),
-                  onTap: (() {
-                    _controller.view = CalendarView.timelineMonth;
-                  }),
-                ),
-              ];
-            },
-          ),
+          trailing: _topRight(),
         ),
         // Bloc for whole page
         body: BlocConsumer<ScheduleBloc, ScheduleState>(
@@ -92,113 +71,131 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           builder: (Acontext, state) {
             return SafeArea(
               bottom: false,
-              child: SfCalendar(
-                view: CalendarView.timelineMonth,
-                controller: _controller,
-                showNavigationArrow: true,
-                showDatePickerButton: true,
-                allowDragAndDrop: true,
-                // onDragEnd: dragEnd,
-                // allowAppointmentResize: true,
-                // onAppointmentResizeEnd: resizeEnd,
-                // onSelectionChanged: selectionChanged,
-                dataSource: AppointmentDataSource(
-                  _resourceColl(),
-                  _appointmentDataSource(),
-                ),
-                headerDateFormat: 'dd / MM / yyyy',
-                headerStyle: const CalendarHeaderStyle(
-                  textAlign: TextAlign.center,
-                  textStyle: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
+              child: MultiSplitViewTheme(
+                data: MultiSplitViewThemeData(
+                  dividerPainter: DividerPainters.grooved1(
+                    color: Colors.indigo[100]!,
+                    highlightedColor: Colors.indigo[900]!,
                   ),
                 ),
-                // specialRegions: _getTimeRegions(),
-                // timeRegionBuilder: timeRegionBuilder,
-                // loadMoreWidgetBuilder: _loadAppointment(),
-                timeSlotViewSettings: const TimeSlotViewSettings(
-                  // startHour: 9,
-                  // endHour: 19,
-                  // timeInterval:
-                  //     (kIsWeb) ? Duration(minutes: 15) : Duration(minutes: 60),
-                  // timeFormat: 'HH:mm',
-                  // timeTextStyle: TextStyle(
-                  //   fontSize: 12,
-                  //   color: Colors.black,
-                  // ),
-                  timelineAppointmentHeight: 100,
-                  timeIntervalWidth: 80,
-                  // numberOfDaysInView: 7,
-                ),
-                resourceViewSettings: const ResourceViewSettings(
-                  showAvatar: false,
-                  displayNameTextStyle: TextStyle(
-                    fontSize: 16,
-                    color: Colors.black87,
-                  ),
-                ),
-                // monthViewSettings: MonthViewSettings(showAgenda: true),
-                appointmentBuilder: (context, details) {
-                  final Appointment appointment = details.appointments.first;
-                  // if (_controller.view != CalendarView.timelineDay) {
-                  return Scaffold(
-                    body: Container(
-                      height: details.bounds.height,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(color: appointment.color),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              appointment.notes!,
-                              // meeting.subject,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              maxLines: 3,
-                              softWrap: false,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                child: MultiSplitView(
+                  axis: Axis.vertical,
+                  children: [
+                    SfCalendar(
+                      view: CalendarView.timelineMonth,
+                      controller: _controller,
+                      showNavigationArrow: true,
+                      showDatePickerButton: true,
+                      allowDragAndDrop: true,
+                      // onDragEnd: dragEnd,
+                      // allowAppointmentResize: true,
+                      // onAppointmentResizeEnd: resizeEnd,
+                      // onSelectionChanged: selectionChanged,
+                      dataSource: AppointmentDataSource(
+                        _resourceColl(),
+                        _appointmentDataSource(),
+                      ),
+                      headerDateFormat: _headerDateFormat,
+                      headerStyle: const CalendarHeaderStyle(
+                        textAlign: TextAlign.center,
+                        textStyle: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
                         ),
                       ),
-                    ),
-                  );
-                  // }
-                  return Container();
-                },
-
-                onTap: (value) {
-                  if (value.targetElement != CalendarElement.header &&
-                      value.targetElement != CalendarElement.viewHeader &&
-                      value.targetElement != CalendarElement.resourceHeader) {
-                    Acontext.read<ScheduleBloc>()
-                        .add(DateScheduleEvent(date: value.date!));
-                    Acontext.read<ScheduleBloc>().add(TimeScheduleEvent(
-                        time: TimeOfDay.fromDateTime(value.date!)));
-
-                    if (value.targetElement == CalendarElement.appointment) {
-                      final Appointment appointment = value.appointments?.first;
-                      Acontext.read<ScheduleBloc>()
-                          .add(NameScheduleEvent(name: appointment.notes!));
-                      // Acontext.read<ScheduleBloc>().add(EmailScheduleEvent(
-                      //     email: appointment.resourceIds![1].toString()));
-                    } else {
-                      Acontext.read<ScheduleBloc>().add(InitScheduleEvent());
-                    }
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) {
-                        return _fromBuilder();
+                      // specialRegions: _getTimeRegions(),
+                      // timeRegionBuilder: timeRegionBuilder,
+                      // loadMoreWidgetBuilder: _loadAppointment(),
+                      timeSlotViewSettings: const TimeSlotViewSettings(
+                        // startHour: 9,
+                        // endHour: 19,
+                        // timeInterval:
+                        //     (kIsWeb) ? Duration(minutes: 15) : Duration(minutes: 60),
+                        timeFormat: 'H:mm',
+                        timeTextStyle:
+                            TextStyle(color: Colors.black, fontSize: 12),
+                        timelineAppointmentHeight: 100,
+                        timeIntervalWidth: 60,
+                      ),
+                      resourceViewSettings: const ResourceViewSettings(
+                        showAvatar: false,
+                        displayNameTextStyle: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      // monthViewSettings: MonthViewSettings(showAgenda: true),
+                      appointmentBuilder: (context, details) {
+                        final Appointment appointment =
+                            details.appointments.first;
+                        // if (_controller.view != CalendarView.timelineDay) {
+                        return Scaffold(
+                          body: Container(
+                            height: details.bounds.height,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(color: appointment.color),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    appointment.notes!,
+                                    // meeting.subject,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 3,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
                       },
-                    );
-                  } else {}
-                },
+
+                      onTap: (value) {
+                        if (value.targetElement != CalendarElement.header &&
+                            value.targetElement != CalendarElement.viewHeader &&
+                            value.targetElement !=
+                                CalendarElement.resourceHeader) {
+                          Acontext.read<ScheduleBloc>()
+                              .add(DateScheduleEvent(date: value.date!));
+                          Acontext.read<ScheduleBloc>().add(TimeScheduleEvent(
+                              time: TimeOfDay.fromDateTime(value.date!)));
+
+                          if (value.targetElement ==
+                              CalendarElement.appointment) {
+                            final Appointment appointment =
+                                value.appointments?.first;
+                            Acontext.read<ScheduleBloc>().add(
+                                NameScheduleEvent(name: appointment.notes!));
+                            // Acontext.read<ScheduleBloc>().add(EmailScheduleEvent(
+                            //     email: appointment.resourceIds![1].toString()));
+                          } else {
+                            Acontext.read<ScheduleBloc>()
+                                .add(InitScheduleEvent());
+                          }
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return _fromBuilder();
+                            },
+                          );
+                        } else {}
+                      },
+                    ),
+                    Container(
+                      height: 10,
+                      color: Colors.blueGrey,
+                      child: Center(child: Text('data')),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -362,6 +359,40 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     );
   }
 
+  Widget _topRight() {
+    return PopupMenuButton(
+      position: PopupMenuPosition.under,
+      icon: Icon(
+        Icons.remove_red_eye,
+        color: Colors.blue,
+      ),
+      itemBuilder: (BuildContext context) {
+        return [
+          PopupMenuItem<int>(
+            value: 0,
+            child: Text('By Day'),
+            onTap: (() {
+              _controller.view = CalendarView.timelineDay;
+              setState(() {
+                _headerDateFormat = 'dd / MM / yyyy';
+              });
+            }),
+          ),
+          PopupMenuItem<int>(
+            value: 1,
+            child: Text('By Month'),
+            onTap: (() {
+              _controller.view = CalendarView.timelineMonth;
+              setState(() {
+                _headerDateFormat = '';
+              });
+            }),
+          ),
+        ];
+      },
+    );
+  }
+
   // Widget timeRegionBuilder(
   //     BuildContext context, TimeRegionDetails timeRegionDetails) {
   //   if (timeRegionDetails.region.text == "Lunch") {
@@ -496,10 +527,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
   List<Appointment> _appointmentDataSource() {
     List<Appointment> appointments = <Appointment>[];
-    final DateTime today = DateTime.now();
-    final DateTime startTime =
-        DateTime(today.year, today.month, today.day, today.hour);
-    final DateTime endTime = startTime.add(const Duration(hours: 1));
+    final DateTime today = DateTime.now().subtract(Duration(hours: 6));
+    final DateTime startTime = today;
+    final DateTime endTime = startTime.add(const Duration(hours: 6));
     // DateTime exceptionDate = DateTime(2022, 11, 11);
     appointments.addAll(
       [
@@ -519,7 +549,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           notes: 'NAME 2',
           color: Colors.lightBlueAccent,
           resourceIds: ['0002'],
-          // recurrenceRule: 'FREQ=DAILY;COUNT=20',
+          recurrenceRule: 'FREQ=DAILY;COUNT=5',
           // recurrenceExceptionDates: <DateTime>[exceptionDate]
         ),
         Appointment(
