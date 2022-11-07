@@ -536,46 +536,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         Appointment(
           startTime: startTime,
           endTime: endTime,
-          subject: 'Nails',
-          notes: 'NAME 1',
+          subject: 'WORK',
+          notes: 'WORK',
           color: Colors.lightBlueAccent,
-          resourceIds: ['0001'],
-          // recurrenceRule: 'FREQ=DAILY;INTERVAL=1;COUNT=10',
-        ),
-        Appointment(
-          startTime: startTime,
-          endTime: endTime,
-          subject: 'Spa',
-          notes: 'NAME 2',
-          color: Colors.lightBlueAccent,
-          resourceIds: ['0002'],
+          resourceIds: ['0001','0002','0003','0004','0005'],
           recurrenceRule: 'FREQ=DAILY;COUNT=5',
           // recurrenceExceptionDates: <DateTime>[exceptionDate]
         ),
-        Appointment(
-          startTime: startTime,
-          endTime: endTime,
-          subject: 'Beauty',
-          notes: 'NAME 3',
-          color: Colors.lightBlueAccent,
-          resourceIds: ['0003'],
-        ),
-        Appointment(
-          startTime: startTime,
-          endTime: endTime,
-          subject: 'Massage',
-          notes: 'NAME 4',
-          color: Colors.lightBlueAccent,
-          resourceIds: ['0004'],
-        ),
-        Appointment(
-          startTime: startTime,
-          endTime: endTime,
-          subject: 'Haircut',
-          notes: 'NAME 5',
-          color: Colors.lightBlueAccent,
-          resourceIds: ['0005'],
-        )
       ],
     );
     return appointments;

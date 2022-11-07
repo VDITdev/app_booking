@@ -58,6 +58,7 @@ dependencies:
 
   syncfusion_flutter_calendar: ^20.3.52
   syncfusion_localizations: ^20.3.47
+  syncfusion_flutter_datagrid: ^20.3.52
 
 dev_dependencies:
   flutter_test:

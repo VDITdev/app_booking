@@ -1,5 +1,6 @@
 import 'package:app_booking/screens/schedule/schedule_screen.dart';
 import 'package:app_booking/screens/schedule/calendar_screen.dart';
+import 'package:app_booking/screens/support/support_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -41,6 +42,17 @@ class DrawerMenu extends StatelessWidget {
             title: const Text(' Dashboard '),
             onTap: () {
               Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.support),
+            title: const Text(' Support '),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                CupertinoPageRoute(builder: (context) => SupportScreen()),
+              );
             },
           ),
           ListTile(

@@ -7,7 +7,7 @@ Facebook:
 Google:
 707361061103-cdrcbea1brthgh2bpurhajjs21uo5j1j.apps.googleusercontent.com
 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
-
+AIzaSyCCo8jbBv9Jzd1WZn6W4gtT5tVzTR0aKVI
 
 
 https://github.com/GeekyAnts/flutter_amplify_datastore_demo
