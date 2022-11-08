@@ -18,3 +18,8 @@ https://medium.com/@dantasfiles/three-methods-to-get-user-information-in-aws-amp
 
 https://64w513t4hhar-staging.auth.eu-west-2.amazoncognito.com/oauth2/idpresponse
 
+
+
+https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/data-binding/basic-bindings
+https://ej2.syncfusion.com/aspnetmvc/documentation/introduction
+https://ej2.syncfusion.com/home/aspnetmvc.html
